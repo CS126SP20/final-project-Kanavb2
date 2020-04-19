@@ -5,6 +5,8 @@
 
 #include "direction.h"
 
+#include <cstddef>
+
 namespace island {
 
 /**
@@ -31,13 +33,13 @@ class Engine {
 
  private:
   /** The width of the island map. */
-  const size_t width_;
+  size_t width_;
 
   /** The height of the island map. */
-  const size_t height_;
+  size_t height_;
 
   /** The direction the player character moves in. */
-  const Direction direction_;
+  Direction direction_;
 };
 
 }  // namespace island

@@ -6,10 +6,10 @@
 namespace island {
 
 enum class Direction {
-  kUp;
-  kDown;
-  kLeft;
-  kRight;
+  kUp,
+  kDown,
+  kLeft,
+  kRight
 };
 
 }  // namespace island
