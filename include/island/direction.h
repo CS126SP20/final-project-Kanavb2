@@ -5,6 +5,7 @@
 
 namespace island {
 
+/** Represents all the possible directions the characters can move. */
 enum class Direction {
   kUp,
   kDown,
