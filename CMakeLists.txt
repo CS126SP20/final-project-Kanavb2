@@ -77,6 +77,11 @@ FetchContent_Declare(
     GIT_TAG        v2.11.1
 )
 
+FetchContent_Declare(
+        allegro
+        GIT_REPOSITORY https://github.com/liballeg/allegro5.git
+)
+
 # Adds catch2 library. This is a header only library.
 FetchContent_GetProperties(catch2)
 if(NOT catch2_POPULATED)
@@ -87,3 +92,12 @@ if(NOT catch2_POPULATED)
 endif()
 
 # Add more CMake libraries here ...
+FetchContent_GetProperties(allegro)
+if(NOT allegro_POPULATED)
+    FetchContent_Populate(allegro)
+    add_subdirectory(${allegro_SOURCE_DIR} ${allegro_BINARY_DIR})
+    target_include_directories(allegro PUBLIC
+            "${allegro_SOURCE_DIR}/include"
+            "${allegro_BINARY_DIR}/include"
+            )
+endif()
