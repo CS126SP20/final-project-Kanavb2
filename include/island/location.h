@@ -33,18 +33,26 @@ class Location {
   Location operator%(const Location& rhs) const;
 
   /**
+   * Overload for the assignment operator.
+   *
+   * @param rhs rhs the other location to perform the operation on
+   * @return the assigned location
+   */
+  Location operator=(const Location& rhs) const;
+
+  /**
    * Accessor function for the row index in the location.
    *
    * @return the row index of the location
    */
-  int Row() const;
+  int GetRow() const;
 
   /**
    * Accessor function for the column index in the location.
    *
    * @return the column index of the location
    */
-  int Col() const;
+  int GetCol() const;
 
  private:
   /** The row index of the location. */

@@ -3,12 +3,21 @@
 #ifndef ISLAND_PLAYER_H_
 #define ISLAND_PLAYER_H_
 
+#include <utility>
+
+#include "location.h"
+
 namespace island {
 
 /** Represents a player in the game. */
 struct Player {
-  Player(const std::string& name) : name(name) {}
-  std::string name;
+
+  Player(std::string name, Location location)
+        : name_(std::move(name)),
+          location_(location){}
+
+  std::string name_;
+  Location location_;
 };
 
 }  // namespace island

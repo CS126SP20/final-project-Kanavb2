@@ -4,6 +4,7 @@
 #define ISLAND_ENGINE_H_
 
 #include "direction.h"
+#include "player.h"
 
 #include <cstddef>
 
@@ -29,7 +30,9 @@ class Engine {
   void Save();
 
   /** Changes the direction of the player character with each step. */
-  void SetDirection(const Direction& direction);
+  inline void SetDirection(const Direction& direction) {
+    direction_ = direction;
+  }
 
  private:
   /** The width of the island map. */
@@ -40,6 +43,9 @@ class Engine {
 
   /** The direction the player character moves in. */
   Direction direction_;
+
+  /** The object representing the player character. */
+  Player player_;
 };
 
 }  // namespace island
