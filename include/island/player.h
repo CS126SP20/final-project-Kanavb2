@@ -4,6 +4,7 @@
 #define ISLAND_PLAYER_H_
 
 #include <utility>
+#include <string>
 
 #include "location.h"
 

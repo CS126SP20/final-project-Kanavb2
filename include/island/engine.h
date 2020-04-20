@@ -34,6 +34,15 @@ class Engine {
     direction_ = direction;
   }
 
+  /**
+   * Accessor function for the player in the game.
+   *
+   * @return the player in the game engine
+   */
+  inline Player GetPlayer() const {
+    return player_;
+  }
+
  private:
   /** The width of the island map. */
   size_t width_;
