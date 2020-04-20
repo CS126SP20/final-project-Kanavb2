@@ -26,6 +26,7 @@ public:
 
 private:
   void DrawPlayer() const;
+  void HandleMovement(island::Direction direction);
   cinder::gl::TextureRef GetPlayerDirectionImage() const;
 
 private:

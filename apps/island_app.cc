@@ -61,15 +61,60 @@ void IslandApp::draw() {
 }
 
 void IslandApp::DrawPlayer() const {
-
+  Location loc = engine_.GetPlayer().location_;
+  cinder::gl::TextureRef image = GetPlayerDirectionImage();
+  cinder::gl::draw(image, Rectf( 50 * loc.GetRow(),
+                                 50 * loc.GetCol(),
+                                 50 * loc.GetRow() + 50,
+                                 50 * loc.GetCol() + 50));
 }
 
-cinder::gl::TextureRef IslandApp::GetPlayerDirectionImage() const{
+cinder::gl::TextureRef IslandApp::GetPlayerDirectionImage() const {
 
 }
 
 void IslandApp::keyDown(KeyEvent event) {
+  switch (event.getCode()) {
+    case KeyEvent::KEY_UP:
+    case KeyEvent::KEY_w: {
+      HandleMovement(Direction::kUp);
+      break;
+    }
 
+    case KeyEvent::KEY_DOWN:
+    case KeyEvent::KEY_s: {
+      HandleMovement(Direction::kDown);
+      break;
+    }
+
+    case KeyEvent::KEY_LEFT:
+    case KeyEvent::KEY_a: {
+      HandleMovement(Direction::kLeft);
+      break;
+    }
+
+    case KeyEvent::KEY_RIGHT:
+    case KeyEvent::KEY_d: {
+      HandleMovement(Direction::kRight);
+      break;
+    }
+
+    case KeyEvent::KEY_p: {
+      paused_ = !paused_;
+    }
+  }
+}
+
+void IslandApp::HandleMovement(Direction direction) {
+  is_changed_direction_ = true;
+  engine_.SetDirection(direction);
+
+  if (prev_direction_ == direction) {
+    last_changed_direction_++;
+  } else {
+    last_changed_direction_ = 0;
+  }
+  prev_direction_ = direction;
 }
 
 }  // namespace myapp
