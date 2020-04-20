@@ -3,6 +3,8 @@
 #ifndef ISLAND_MAP_H_
 #define ISLAND_MAP_H_
 
+#include <array>
+
 namespace island {
 
 /** Class which represents the map for the entire game. */

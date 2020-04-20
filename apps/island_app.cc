@@ -1,11 +1,10 @@
-// Copyright (c) 2020 [Your Name]. All rights reserved.
+// Copyright (c) 2020 Kanav Bhatnagar. All rights reserved.
 
 #include "island_app.h"
 
 #include <cinder/app/App.h>
 #include <cinder/gl/draw.h>
 #include <cinder/ImageIo.h>
-
 
 namespace islandapp {
 
@@ -17,13 +16,27 @@ using island::Location;
 using std::chrono::seconds;
 using std::chrono::system_clock;
 
+/** The number of movement sprites for the player. */
+const size_t kNumSprites = 4;
+
+/** The screen size in terms of tile size. */
+const size_t kScreenSize = 16;
+
+/** The center of the screen. */
+const size_t kCenterScreen = 7;
+
+/** The tile size in terms of pixels. */
+const size_t kTileSize = 50;
+
+/** The speed of the player character. */
+const size_t kSpeed = 50;
 
 IslandApp::IslandApp()
-    : engine_{16, 16},
+    : engine_{kScreenSize, kScreenSize},
       state_{GameState::kPlaying},
       player_name_{"meow"},
       paused_{false},
-      speed_{50},
+      speed_{kSpeed},
       last_changed_direction_{0},
       is_changed_direction_{false},
       prev_direction_{Direction::kDown}
@@ -63,14 +76,86 @@ void IslandApp::draw() {
 void IslandApp::DrawPlayer() const {
   Location loc = engine_.GetPlayer().location_;
   cinder::gl::TextureRef image = GetPlayerDirectionImage();
-  cinder::gl::draw(image, Rectf( 50 * loc.GetRow(),
-                                 50 * loc.GetCol(),
-                                 50 * loc.GetRow() + 50,
-                                 50 * loc.GetCol() + 50));
+  cinder::gl::draw(image, Rectf( kTileSize * kCenterScreen,
+                                 kTileSize * kCenterScreen,
+                                 kTileSize * (kCenterScreen + 1),
+                                 kTileSize * (kCenterScreen + 1)));
 }
 
 cinder::gl::TextureRef IslandApp::GetPlayerDirectionImage() const {
+  std::string image_path;
+  switch (prev_direction_) {
+    case island::Direction::kDown: {
+      switch (last_changed_direction_ % kNumSprites) {
+        case 0 :
+          image_path = "resources/down_nomove.png";
+          break;
+        case 1 :
+          image_path = "resources/down_left.png";
+          break;
+        case 2 :
+          image_path = "resources/down_nomove.png";
+          break;
+        case 3 :
+          image_path = "resources/down_right.png";
+          break;
+      }
+      break;
+    }
+    case Direction::kUp: {
+      switch (last_changed_direction_ % kNumSprites) {
+        case 0 :
+          image_path = "resources/up_nomove.png";
+          break;
+        case 1 :
+          image_path = "resources/up_left.png";
+          break;
+        case 2 :
+          image_path = "resources/up_nomove.png";
+          break;
+        case 3 :
+          image_path = "resources/up_right.png";
+          break;
+      }
+      break;
+    }
+    case Direction::kLeft: {
+      switch (last_changed_direction_ % kNumSprites) {
+        case 0 :
+          image_path = "resources/left_nomove.png";
+          break;
+        case 1 :
+          image_path = "resources/left_left.png";
+          break;
+        case 2 :
+          image_path = "resources/left_nomove.png";
+          break;
+        case 3 :
+          image_path = "resources/left_right.png";
+          break;
+      }
+      break;
+    }
+    case Direction::kRight: {
+      switch (last_changed_direction_ % kNumSprites) {
+        case 0 :
+          image_path = "resources/right_nomove.png";
+          break;
+        case 1 :
+          image_path = "resources/right_left.png";
+          break;
+        case 2 :
+          image_path = "resources/right_nomove.png";
+          break;
+        case 3 :
+          image_path = "resources/right_right.png";
+          break;
+      }
+      break;
+    }
+  }
 
+  return cinder::gl::Texture::create (cinder::loadImage(image_path));
 }
 
 void IslandApp::keyDown(KeyEvent event) {
