@@ -2,9 +2,12 @@
 
 #include "island_app.h"
 
+#include <allegro5/allegro.h>
+#include <allegro5/internal/aintern_display.h>
+
+#include <cinder/ImageIo.h>
 #include <cinder/app/App.h>
 #include <cinder/gl/draw.h>
-#include <cinder/ImageIo.h>
 
 namespace islandapp {
 
@@ -30,6 +33,9 @@ const size_t kMapTileSize = 25;
 
 /** The speed of the player character. */
 const size_t kSpeed = 50;
+
+/** Trivial allegro display object. */
+ALLEGRO_DISPLAY* display = nullptr;
 
 IslandApp::IslandApp()
     : engine_{island::kMapSize, island::kMapSize},
