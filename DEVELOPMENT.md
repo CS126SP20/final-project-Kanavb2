@@ -17,9 +17,10 @@ Add game graphics:
 ### 4/21/20
 Handle movement in the game: 
 * Allow for movement of the player within the map
+* Make sure the player cannot move to certain tiles
+
 
 To do:
-* Make sure the player cannot move to certain tiles
 * Make the camera follow the player
 * Add npc sprites
 * Add npcs throughout the map

@@ -22,9 +22,6 @@ const size_t kNumSprites = 4;
 /** The screen size in terms of tile size. */
 const size_t kScreenSize = 40;
 
-/** The map size in terms of tile size. */
-const size_t kMapSize = 50;
-
 /** The tile size in for the player terms of pixels. */
 const size_t kPlayerTileSize = 20;
 
@@ -35,7 +32,7 @@ const size_t kMapTileSize = 25;
 const size_t kSpeed = 50;
 
 IslandApp::IslandApp()
-    : engine_{kMapSize, kMapSize},
+    : engine_{island::kMapSize, island::kMapSize},
       state_{GameState::kPlaying},
       player_name_{"meow"},
       paused_{false},
@@ -204,15 +201,19 @@ void IslandApp::keyDown(KeyEvent event) {
 }
 
 void IslandApp::HandleMovement(Direction direction) {
-  is_changed_direction_ = true;
-  engine_.SetDirection(direction);
-
   if (prev_direction_ == direction) {
     last_changed_direction_++;
   } else {
     last_changed_direction_ = 0;
   }
   prev_direction_ = direction;
+
+  if (!engine_.IsValidDirection(direction)) {
+    return;
+  }
+
+  is_changed_direction_ = true;
+  engine_.SetDirection(direction);
 }
 
 }  // namespace myapp

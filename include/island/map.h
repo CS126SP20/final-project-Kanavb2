@@ -7,20 +7,23 @@
 
 namespace island {
 
-const size_t kMapSize = 128;
+/** The map size in terms of tile size. */
+const size_t kMapSize = 50;
+
+/** Represents each tile in the map. */
+enum Tile {
+  kGrass,
+  kPath,
+  kWater,
+  kFence,
+  kHouse,
+  kInvalid,
+  kNpc
+};
 
 /** Class which represents the map for the entire game. */
 class Map {
 public:
-  /** Represents each tile in the map. */
-  enum Tile {
-    kDirt,
-    kGrass,
-    kPath,
-    kWater,
-    kWall
-  };
-
   /** Constructor which initializes the map with tile values. */
   Map();
 
@@ -31,7 +34,7 @@ public:
    * @param y the y coordinate of the tile the user wants to move to
    * @return whether or not the tile is traversable
    */
-  bool IsTraversableTile(int x, int y);
+  bool IsTraversableTile(int row, int col);
 
 private:
   /** Stores all the tile values for the map. */

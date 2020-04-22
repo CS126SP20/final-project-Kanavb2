@@ -4,14 +4,31 @@
 
 namespace island {
   Map::Map() {
+    Tile test[] =
+        {kInvalid, kInvalid, kInvalid, kInvalid, kInvalid, kInvalid, kInvalid,
+            kGrass, kHouse, kHouse, kHouse, kHouse, kHouse, kHouse, kInvalid,
+            kInvalid, kFence, kGrass, kGrass, kGrass, kGrass, kGrass, kGrass,
+            kGrass, kGrass, kGrass, kPath, kInvalid, kInvalid, kInvalid,
+            kInvalid, kInvalid, kInvalid, kInvalid, kInvalid, kInvalid,
+            kInvalid, kInvalid, kInvalid, kInvalid, kInvalid, kInvalid,
+            kInvalid, kInvalid, kInvalid, kInvalid, kInvalid, kInvalid,
+            kInvalid, kInvalid};
+
     for (size_t row = 0; row < kMapSize; row++) {
       for (size_t col = 0; col < kMapSize; col++) {
-        raw_map_[row][col] = kWater;
+        if (col == 0) {
+          raw_map_[row][col] = test[row];
+        } else {
+          raw_map_[row][col] = Tile::kGrass;
+        }
       }
     }
   }
 
-  bool Map::IsTraversableTile(int x, int y) {
+  bool Map::IsTraversableTile(int row, int col) {
+    if (raw_map_[row][col] == kGrass || raw_map_[row][col] == kPath) {
+      return true;
+    }
     return false;
   }
 }  // namespace island

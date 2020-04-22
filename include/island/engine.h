@@ -5,6 +5,7 @@
 
 #include "direction.h"
 #include "player.h"
+#include "map.h"
 
 #include <cstddef>
 
@@ -28,6 +29,9 @@ class Engine {
 
   /** Saves the game. */
   void Save();
+
+  /** Determines whether the direction the player wants to move in is valid. */
+  bool IsValidDirection(const Direction& direction);
 
   /** Changes the direction of the player character with each step. */
   inline void SetDirection(const Direction& direction) {
@@ -55,6 +59,9 @@ class Engine {
 
   /** The object representing the player character. */
   Player player_;
+
+  /** Map of the game. */
+  Map map_;
 };
 
 }  // namespace island
