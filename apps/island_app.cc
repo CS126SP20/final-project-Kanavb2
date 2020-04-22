@@ -20,19 +20,22 @@ using std::chrono::system_clock;
 const size_t kNumSprites = 4;
 
 /** The screen size in terms of tile size. */
-const size_t kScreenSize = 16;
+const size_t kScreenSize = 40;
 
-/** The center of the screen. */
-const size_t kCenterScreen = 7;
+/** The map size in terms of tile size. */
+const size_t kMapSize = 50;
 
-/** The tile size in terms of pixels. */
-const size_t kTileSize = 50;
+/** The tile size in for the player terms of pixels. */
+const size_t kPlayerTileSize = 20;
+
+/** The tile size in for the map terms of pixels. */
+const size_t kMapTileSize = 25;
 
 /** The speed of the player character. */
 const size_t kSpeed = 50;
 
 IslandApp::IslandApp()
-    : engine_{kScreenSize, kScreenSize},
+    : engine_{kMapSize, kMapSize},
       state_{GameState::kPlaying},
       player_name_{"meow"},
       paused_{false},
@@ -43,8 +46,8 @@ IslandApp::IslandApp()
       {}
 
 void IslandApp::setup() {
-  cinder::gl::enableDepthWrite();
-  cinder::gl::enableDepthRead();
+  cinder::gl::disableDepthRead();
+  cinder::gl::disableDepthWrite();
 }
 
 void IslandApp::update() {
@@ -63,23 +66,33 @@ void IslandApp::update() {
 }
 
 void IslandApp::draw() {
-  cinder::gl::enableAlphaBlending();
   if (paused_) {
     return;
   }
 
+  cinder::gl::enableAlphaBlending();
   cinder::gl::clear();
-  cinder::gl::clear(Color(0, 0, 0));
+  cinder::gl::color(Color(1,1,1));
+  DrawMap();
   DrawPlayer();
 }
 
 void IslandApp::DrawPlayer() const {
   Location loc = engine_.GetPlayer().location_;
   cinder::gl::TextureRef image = GetPlayerDirectionImage();
-  cinder::gl::draw(image, Rectf( kTileSize * kCenterScreen,
-                                 kTileSize * kCenterScreen,
-                                 kTileSize * (kCenterScreen + 1),
-                                 kTileSize * (kCenterScreen + 1)));
+  cinder::gl::draw(image, Rectf( kPlayerTileSize * loc.GetRow(),
+                                 kPlayerTileSize * loc.GetCol(),
+                                 kPlayerTileSize * (loc.GetRow() + 1),
+                                 kPlayerTileSize * (loc.GetCol() + 1)));
+}
+
+void IslandApp::DrawMap() const {
+  auto map = cinder::gl::Texture::create
+      (cinder::loadImage("resources/map.png"));
+  cinder::gl::draw(map, Rectf( 0,
+                                0,
+                                kMapTileSize * (kScreenSize),
+                                kMapTileSize * (kScreenSize)));
 }
 
 cinder::gl::TextureRef IslandApp::GetPlayerDirectionImage() const {

@@ -7,6 +7,8 @@
 
 namespace island {
 
+const size_t kMapSize = 128;
+
 /** Class which represents the map for the entire game. */
 class Map {
 public:
@@ -33,7 +35,7 @@ public:
 
 private:
   /** Stores all the tile values for the map. */
-  std::array<std::array<Tile, 64>, 64> raw_map_;
+  std::array<std::array<Tile, kMapSize>, kMapSize> raw_map_;
 };
 
 }  // namespace island
