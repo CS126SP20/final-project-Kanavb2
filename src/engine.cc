@@ -22,7 +22,8 @@ Location FromDirection(const Direction& direction) {
 }
 
 Engine::Engine(size_t width, size_t height)
-    :   player_ {Player("meow", {7, 7})}{
+    :   player_ {Player("meow", {7, 7},
+        {10,10,10,10})}{
   width_ = width;
   height_ = height;
   direction_ = Direction::kRight;
