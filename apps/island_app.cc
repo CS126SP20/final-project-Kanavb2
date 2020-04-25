@@ -169,6 +169,24 @@ void IslandApp::HandleCameraInteractions() {
                             (getWindowWidth() / kScreenSize) / kScreenDivider);
   camera_.SetCol(engine_.GetPlayer().location_.GetCol() -
                             (getWindowHeight() / kScreenSize) / kScreenDivider);
+
+  if (camera_.GetRow() < 0) {
+    camera_.SetRow(0);
+  }
+
+  if (camera_.GetCol() < 0) {
+    camera_.SetCol(0);
+  }
+
+  size_t max_camera_range = kMapTileSize - getWindowWidth() / kScreenSize;
+
+  if (camera_.GetRow() > max_camera_range) {
+    camera_.SetRow( max_camera_range);
+  }
+
+  if (camera_.GetCol() >  max_camera_range) {
+    camera_.SetCol( max_camera_range);
+  }
 }
 
 void IslandApp::keyDown(KeyEvent event) {
