@@ -38,7 +38,7 @@ class Location {
    *
    * @return the row index of the location
    */
-  inline int GetRow() {
+  inline int GetRow() const {
     return row_;
   }
 
@@ -47,8 +47,16 @@ class Location {
    *
    * @return the column index of the location
    */
-  inline int GetCol() {
+  inline int GetCol() const {
     return col_;
+  }
+
+  inline void SetRow(int set) {
+    row_ = set;
+  }
+
+  inline void SetCol(int set) {
+    col_ = set;
   }
 
  private:

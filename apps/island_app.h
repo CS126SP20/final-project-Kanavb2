@@ -22,6 +22,27 @@ enum class GameState {
 /** The class that interacts with cinder to run the game. */
 class IslandApp : public cinder::app::App {
 public:
+  /** The number of movement sprites for the player. */
+  const size_t kNumSprites = 4;
+
+  /** The screen size in terms of tile size. */
+  const size_t kScreenSize = 40;
+
+  /** The tile size for the player terms of pixels. */
+  const size_t kPlayerTileSize = 40;
+
+  /** The tile size for the map terms of pixels. */
+  const size_t kMapTileSize = 50;
+
+  /** The speed of the player character. */
+  const size_t kSpeed = 50;
+
+  /** The divider for how much of the total screen the user should view. */
+  const size_t kScreenDivider = 2;
+
+  /** The multiplier for how many pixels the camera translates the view. */
+  const float kTranslationMultiplier = 40.0;
+
   /** The constructor for the game. */
   IslandApp();
 
@@ -65,6 +86,12 @@ private:
   void HandleMovement(island::Direction direction);
 
   /**
+   * Handles the movement of the camera with respect to the player.
+   * Makes sure the camera cannot move out of the map area.
+   */
+  void HandleCameraInteractions();
+
+  /**
    * Determines what the player character should look like
    * when they move in a particular direction.
    *
@@ -72,7 +99,6 @@ private:
    */
   cinder::gl::TextureRef GetPlayerDirectionImage() const;
 
-private:
   /** The game engine responsible for running the game. */
   island::Engine engine_;
 
@@ -91,20 +117,24 @@ private:
   /** Determines whether the game is paused or not. */
   bool paused_;
 
-  /** Determines whether the user changed their direction
+  /**
+   * Determines whether the user changed their direction
    * after the previous directional command.
    */
   bool is_changed_direction_;
 
-  /** The number of directional commands
+  /**
+   * The number of directional commands
    * since the direction was last changed changed.
    */
   size_t last_changed_direction_;
 
   /** The previous direction that the user moved in. */
   island::Direction prev_direction_;
+
+  island::Location camera_;
 };
 
-}  // namespace myapp
+}  // namespace islandapp
 
 #endif  // FINALPROJECT_APPS_MYAPP_H_

@@ -2,9 +2,6 @@
 
 #include "island_app.h"
 
-#include <allegro5/allegro.h>
-#include <allegro5/internal/aintern_display.h>
-
 #include <cinder/ImageIo.h>
 #include <cinder/app/App.h>
 #include <cinder/gl/draw.h>
@@ -19,24 +16,6 @@ using island::Location;
 using std::chrono::seconds;
 using std::chrono::system_clock;
 
-/** The number of movement sprites for the player. */
-const size_t kNumSprites = 4;
-
-/** The screen size in terms of tile size. */
-const size_t kScreenSize = 40;
-
-/** The tile size in for the player terms of pixels. */
-const size_t kPlayerTileSize = 20;
-
-/** The tile size in for the map terms of pixels. */
-const size_t kMapTileSize = 25;
-
-/** The speed of the player character. */
-const size_t kSpeed = 50;
-
-/** Trivial allegro display object. */
-ALLEGRO_DISPLAY* display = nullptr;
-
 IslandApp::IslandApp()
     : engine_{island::kMapSize, island::kMapSize},
       state_{GameState::kPlaying},
@@ -45,7 +24,8 @@ IslandApp::IslandApp()
       speed_{kSpeed},
       last_changed_direction_{0},
       is_changed_direction_{false},
-      prev_direction_{Direction::kDown}
+      prev_direction_{Direction::kDown},
+      camera_{0,0}
       {}
 
 void IslandApp::setup() {
@@ -66,6 +46,8 @@ void IslandApp::update() {
     }
     last_time_ = time;
   }
+
+  HandleCameraInteractions();
 }
 
 void IslandApp::draw() {
@@ -76,8 +58,16 @@ void IslandApp::draw() {
   cinder::gl::enableAlphaBlending();
   cinder::gl::clear();
   cinder::gl::color(Color(1,1,1));
+  cinder::gl::translate(
+      - (camera_.GetRow() * kTranslationMultiplier),
+      - (camera_.GetCol() * kTranslationMultiplier));
+
   DrawMap();
   DrawPlayer();
+
+  cinder::gl::translate(
+      (camera_.GetRow() * kTranslationMultiplier),
+      (camera_.GetCol() * kTranslationMultiplier));
 }
 
 void IslandApp::DrawPlayer() const {
@@ -94,14 +84,14 @@ void IslandApp::DrawMap() const {
       (cinder::loadImage("resources/map.png"));
   cinder::gl::draw(map, Rectf( 0,
                                 0,
-                                kMapTileSize * (kScreenSize),
-                                kMapTileSize * (kScreenSize)));
+                                kMapTileSize * kScreenSize,
+                                kMapTileSize * kScreenSize));
 }
 
 cinder::gl::TextureRef IslandApp::GetPlayerDirectionImage() const {
   std::string image_path;
   switch (prev_direction_) {
-    case island::Direction::kDown: {
+    case Direction::kDown: {
       switch (last_changed_direction_ % kNumSprites) {
         case 0 :
           image_path = "resources/down_nomove.png";
@@ -174,6 +164,13 @@ cinder::gl::TextureRef IslandApp::GetPlayerDirectionImage() const {
   return cinder::gl::Texture::create (cinder::loadImage(image_path));
 }
 
+void IslandApp::HandleCameraInteractions() {
+  camera_.SetRow(engine_.GetPlayer().location_.GetRow() -
+                            (getWindowWidth() / kScreenSize) / kScreenDivider);
+  camera_.SetCol(engine_.GetPlayer().location_.GetCol() -
+                            (getWindowHeight() / kScreenSize) / kScreenDivider);
+}
+
 void IslandApp::keyDown(KeyEvent event) {
   switch (event.getCode()) {
     case KeyEvent::KEY_UP:
@@ -222,4 +219,4 @@ void IslandApp::HandleMovement(Direction direction) {
   engine_.SetDirection(direction);
 }
 
-}  // namespace myapp
+}  // namespace islandapp
