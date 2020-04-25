@@ -5,10 +5,13 @@
 
 #include <cinder/app/App.h>
 #include <cinder/gl/gl.h>
+
 #include <island/engine.h>
 #include <island/direction.h>
 #include <island/location.h>
 #include <island/map.h>
+
+#include <string>
 
 namespace islandapp {
 
@@ -99,6 +102,38 @@ private:
    */
   cinder::gl::TextureRef GetPlayerDirectionImage() const;
 
+  /**
+   * Gets the direction image path to be displayed for the
+   * player character when the user moves down.
+   *
+   * @return the string containing the correct image path to be displayed
+   */
+  std::string GetDownDirectionImage() const;
+
+  /**
+   * Gets the direction image path to be displayed for the
+   * player character when the user moves up.
+   *
+   * @return the string containing the correct image path to be displayed
+   */
+  std::string GetUpDirectionImage() const;
+
+  /**
+   * Gets the direction image path to be displayed for the
+   * player character when the user moves left.
+   *
+   * @return the string containing the correct image path to be displayed
+   */
+  std::string GetLeftDirectionImage() const;
+
+  /**
+   * Gets the direction image path to be displayed for the
+   * player character when the user moves right.
+   *
+   * @return the string containing the correct image path to be displayed
+   */
+  std::string GetRightDirectionImage() const;
+
   /** The game engine responsible for running the game. */
   island::Engine engine_;
 
@@ -109,13 +144,10 @@ private:
   std::chrono::time_point<std::chrono::system_clock> last_time_;
 
   /** The speed or delay of the game, i.e. a lesser value is faster. */
-  const size_t speed_;
+  size_t speed_;
 
   /** The name of the player. */
-  const std::string player_name_;
-
-  /** Determines whether the game is paused or not. */
-  bool paused_;
+  std::string player_name_;
 
   /**
    * Determines whether the user changed their direction
@@ -132,6 +164,7 @@ private:
   /** The previous direction that the user moved in. */
   island::Direction prev_direction_;
 
+  /** The location object to offset the rendering by, illusion of a camera. */
   island::Location camera_;
 };
 

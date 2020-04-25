@@ -15,12 +15,12 @@ using island::Direction;
 using island::Location;
 using std::chrono::seconds;
 using std::chrono::system_clock;
+using std::string;
 
 IslandApp::IslandApp()
     : engine_{island::kMapSize, island::kMapSize},
       state_{GameState::kPlaying},
       player_name_{"meow"},
-      paused_{false},
       speed_{kSpeed},
       last_changed_direction_{0},
       is_changed_direction_{false},
@@ -34,7 +34,7 @@ void IslandApp::setup() {
 }
 
 void IslandApp::update() {
-  if (paused_) {
+  if (state_ == GameState::kPaused) {
     return;
   }
 
@@ -51,7 +51,7 @@ void IslandApp::update() {
 }
 
 void IslandApp::draw() {
-  if (paused_) {
+  if (state_ == GameState::kPaused) {
     return;
   }
 
@@ -89,79 +89,79 @@ void IslandApp::DrawMap() const {
 }
 
 cinder::gl::TextureRef IslandApp::GetPlayerDirectionImage() const {
-  std::string image_path;
+  string image_path;
   switch (prev_direction_) {
     case Direction::kDown: {
-      switch (last_changed_direction_ % kNumSprites) {
-        case 0 :
-          image_path = "resources/down_nomove.png";
-          break;
-        case 1 :
-          image_path = "resources/down_left.png";
-          break;
-        case 2 :
-          image_path = "resources/down_nomove.png";
-          break;
-        case 3 :
-          image_path = "resources/down_right.png";
-          break;
-      }
+      image_path = GetDownDirectionImage();
       break;
     }
     case Direction::kUp: {
-      switch (last_changed_direction_ % kNumSprites) {
-        case 0 :
-          image_path = "resources/up_nomove.png";
-          break;
-        case 1 :
-          image_path = "resources/up_left.png";
-          break;
-        case 2 :
-          image_path = "resources/up_nomove.png";
-          break;
-        case 3 :
-          image_path = "resources/up_right.png";
-          break;
-      }
+      image_path = GetUpDirectionImage();
       break;
     }
     case Direction::kLeft: {
-      switch (last_changed_direction_ % kNumSprites) {
-        case 0 :
-          image_path = "resources/left_nomove.png";
-          break;
-        case 1 :
-          image_path = "resources/left_left.png";
-          break;
-        case 2 :
-          image_path = "resources/left_nomove.png";
-          break;
-        case 3 :
-          image_path = "resources/left_right.png";
-          break;
-      }
+      image_path = GetLeftDirectionImage();
       break;
     }
     case Direction::kRight: {
-      switch (last_changed_direction_ % kNumSprites) {
-        case 0 :
-          image_path = "resources/right_nomove.png";
-          break;
-        case 1 :
-          image_path = "resources/right_left.png";
-          break;
-        case 2 :
-          image_path = "resources/right_nomove.png";
-          break;
-        case 3 :
-          image_path = "resources/right_right.png";
-          break;
-      }
+      image_path = GetRightDirectionImage();
       break;
     }
   }
 
   return cinder::gl::Texture::create (cinder::loadImage(image_path));
+}
+
+string IslandApp::GetDownDirectionImage() const {
+  switch (last_changed_direction_ % kNumSprites) {
+    case 0 :
+      return "resources/down_nomove.png";
+    case 1 :
+      return "resources/down_left.png";
+    case 2 :
+      return "resources/down_nomove.png";
+    case 3 :
+      return "resources/down_right.png";
+  }
+}
+
+string IslandApp::GetUpDirectionImage() const {
+  switch (last_changed_direction_ % kNumSprites) {
+    case 0 :
+      return "resources/up_nomove.png";
+    case 1 :
+      return "resources/up_left.png";
+    case 2 :
+      return "resources/up_nomove.png";
+    case 3 :
+      return "resources/up_right.png";
+  }
+}
+
+string IslandApp::GetLeftDirectionImage() const {
+  switch (last_changed_direction_ % kNumSprites) {
+    case 0 :
+      return "resources/left_nomove.png";
+    case 1 :
+      return "resources/left_left.png";
+    case 2 :
+      return "resources/left_nomove.png";
+    case 3 :
+      return "resources/left_right.png";
+  }
+}
+
+string IslandApp::GetRightDirectionImage() const {
+  switch (last_changed_direction_ % kNumSprites) {
+    case 0 :
+      return "resources/right_nomove.png";
+    case 1 :
+      return "resources/right_left.png";
+    case 2 :
+      return "resources/right_nomove.png";
+    case 3 :
+      return "resources/right_right.png";
+  }
 }
 
 void IslandApp::HandleCameraInteractions() {
@@ -216,7 +216,7 @@ void IslandApp::keyDown(KeyEvent event) {
     }
 
     case KeyEvent::KEY_p: {
-      paused_ = !paused_;
+      state_ = GameState::kPaused;
     }
   }
 }
