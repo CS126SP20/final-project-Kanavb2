@@ -5,50 +5,37 @@
 
 namespace island {
 /** Manages the statistics of a character in the game. */
-class Statistics {
-public:
-  Statistics(size_t hit_points, size_t attack, size_t defense, size_t speed) {
-    hit_points_ = hit_points;
-    attack_ = attack;
-    defense_ = defense;
-    speed_ = speed;
-  }
+struct Statistics {
+  /** The constructor for the Statistics of a character. */
+  Statistics(size_t hit_points, size_t attack, size_t defense, size_t speed)
+  : hit_points_{hit_points},
+    attack_{attack},
+    defense_{defense},
+    speed_{speed} {}
+
+  /**
+   * The hit points the character has.
+   * Changes based on the damage dealt to the character.
+   */
   size_t hit_points_;
+
+  /**
+   * The attack statistic for the character.
+   * Used to determine how much damage is to be dealt in a battle.
+   */
   size_t attack_;
+
+  /**
+   * The defense statistic for the character.
+   * Used to determine how much damage the character takes in a battle.
+   */
   size_t defense_;
+
+  /**
+   * The speed statistic for the character.
+   * Used to determine which character moves first in a battle.
+   */
   size_t speed_;
-
-  inline size_t GetHitPoints() {
-    return hit_points_;
-  }
-
-  inline size_t GetAttack() {
-    return attack_;
-  }
-
-  inline size_t GetDefense() {
-    return defense_;
-  }
-
-  inline size_t GetSpeed() {
-    return speed_;
-  }
-
-  inline void SetHitPoints(size_t hit_points) {
-    hit_points_ = hit_points;
-  }
-
-  inline void SetAttack(size_t attack) {
-    attack_ = attack;
-  }
-
-  inline void SetDefense(size_t defense) {
-    defense_ = defense;
-  }
-
-  inline void SetSpeed(size_t speed) {
-    speed_ = speed;
-  }
 };
 
 }  // namespace island

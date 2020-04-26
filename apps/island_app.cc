@@ -169,10 +169,12 @@ string IslandApp::GetRightDirectionImage() const {
 }
 
 void IslandApp::HandleCameraInteractions() {
+  size_t screen_width = getWindowWidth();
+  size_t screen_height = getWindowHeight();
   camera_.SetRow(engine_.GetPlayer().location_.GetRow() -
-                            (getWindowWidth() / kScreenSize) / kScreenDivider);
+                            (screen_width / kScreenSize) / kScreenDivider);
   camera_.SetCol(engine_.GetPlayer().location_.GetCol() -
-                            (getWindowHeight() / kScreenSize) / kScreenDivider);
+                            (screen_height / kScreenSize) / kScreenDivider);
 
   if (camera_.GetRow() < 0) {
     camera_.SetRow(0);
@@ -182,14 +184,15 @@ void IslandApp::HandleCameraInteractions() {
     camera_.SetCol(0);
   }
 
-  size_t max_camera_range = kMapTileSize - getWindowWidth() / kScreenSize;
+  size_t max_camera_width = kMapTileSize - screen_width / kScreenSize;
+  size_t max_camera_height = kMapTileSize - screen_height / kScreenSize;
 
-  if (camera_.GetRow() > max_camera_range) {
-    camera_.SetRow( max_camera_range);
+  if (camera_.GetRow() > max_camera_width) {
+    camera_.SetRow(max_camera_width);
   }
 
-  if (camera_.GetCol() >  max_camera_range) {
-    camera_.SetCol( max_camera_range);
+  if (camera_.GetCol() >  max_camera_height) {
+    camera_.SetCol(max_camera_height);
   }
 }
 
@@ -220,7 +223,11 @@ void IslandApp::keyDown(KeyEvent event) {
     }
 
     case KeyEvent::KEY_p: {
-      state_ = GameState::kPaused;
+      if (state_ != GameState::kPaused) {
+        state_ = GameState::kPaused;
+      } else {
+        state_ = GameState::kPlaying;
+      }
     }
   }
 }

@@ -28,6 +28,8 @@
 
 ### 4/25/20
 * Finally figured out a way to make the camera follow the player
+* Fixed code style using feedback from Week 1's code review
+* Refactored statistics to be stored in a struct instead of a class as it stores POD
 
 ### To do:
 * Add npc sprites
