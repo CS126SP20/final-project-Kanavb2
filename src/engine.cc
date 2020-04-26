@@ -7,8 +7,14 @@
 
 namespace island {
 
-// Converts a direction into a delta location.
-Location FromDirection(const Direction& direction) {
+Engine::Engine(size_t width, size_t height)
+    :   player_ {Player("meow", {7, 7},
+        {10,10,10,10})},
+        width_{width},
+        height_{height},
+        direction_{Direction::kRight} {}
+
+Location Engine::FromDirection(const Direction& direction) const {
   switch (direction) {
     case Direction::kUp:
       return {0, -1};
@@ -21,15 +27,7 @@ Location FromDirection(const Direction& direction) {
   }
 }
 
-Engine::Engine(size_t width, size_t height)
-    :   player_ {Player("meow", {7, 7},
-        {10,10,10,10})}{
-  width_ = width;
-  height_ = height;
-  direction_ = Direction::kRight;
-}
-
-void Engine::Step() {
+void Engine::ExecuteTimeStep() {
   Location direction_loc = FromDirection(direction_);
   Location new_loc =
       (player_.location_ + direction_loc) % Location(height_, width_);
@@ -40,7 +38,7 @@ void Engine::Save() {
 
 }
 
-bool Engine::IsValidDirection(const Direction &direction) {
+bool Engine::IsValidDirection(const Direction &direction) const {
   Location direction_loc = FromDirection(direction);
   Location new_loc =
       (player_.location_ + direction_loc) % Location(height_, width_);

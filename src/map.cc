@@ -25,10 +25,7 @@ namespace island {
     }
   }
 
-  bool Map::IsTraversableTile(int row, int col) {
-    if (raw_map_[row][col] == kGrass || raw_map_[row][col] == kPath) {
-      return true;
-    }
-    return false;
+  bool Map::IsTraversableTile(int row, int col) const {
+    return raw_map_[row][col] == kGrass || raw_map_[row][col] == kPath;
   }
 }  // namespace island

@@ -12,7 +12,7 @@
 namespace island {
 
 /**
- * This is the game engine; the primary way to interact with the game.
+ * This is the game engine, the primary way to interact with the game.
  */
 class Engine {
  public:
@@ -25,13 +25,16 @@ class Engine {
   Engine(size_t width, size_t height);
 
   /** Executes a time step, moves the player character. */
-  void Step();
+  void ExecuteTimeStep();
+
+  /** Gets the location delta value from a direction. */
+  Location FromDirection(const Direction& direction) const;
 
   /** Saves the game. */
   void Save();
 
   /** Determines whether the direction the player wants to move in is valid. */
-  bool IsValidDirection(const Direction& direction);
+  bool IsValidDirection(const Direction& direction) const;
 
   /** Changes the direction of the player character with each step. */
   inline void SetDirection(const Direction& direction) {

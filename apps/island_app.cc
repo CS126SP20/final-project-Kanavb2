@@ -41,7 +41,7 @@ void IslandApp::update() {
   const auto time = system_clock::now();
   if (time - last_time_ > std::chrono::milliseconds(speed_)) {
     if (is_changed_direction_) {
-      engine_.Step();
+      engine_.ExecuteTimeStep();
       is_changed_direction_ = false;
     }
     last_time_ = time;
@@ -123,6 +123,7 @@ string IslandApp::GetDownDirectionImage() const {
     case 3 :
       return "resources/down_right.png";
   }
+  return "";
 }
 
 string IslandApp::GetUpDirectionImage() const {
@@ -136,6 +137,7 @@ string IslandApp::GetUpDirectionImage() const {
     case 3 :
       return "resources/up_right.png";
   }
+  return "";
 }
 
 string IslandApp::GetLeftDirectionImage() const {
@@ -149,6 +151,7 @@ string IslandApp::GetLeftDirectionImage() const {
     case 3 :
       return "resources/left_right.png";
   }
+  return "";
 }
 
 string IslandApp::GetRightDirectionImage() const {
@@ -162,6 +165,7 @@ string IslandApp::GetRightDirectionImage() const {
     case 3 :
       return "resources/right_right.png";
   }
+  return "";
 }
 
 void IslandApp::HandleCameraInteractions() {

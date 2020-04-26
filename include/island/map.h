@@ -34,7 +34,7 @@ public:
    * @param y the y coordinate of the tile the user wants to move to
    * @return whether or not the tile is traversable
    */
-  bool IsTraversableTile(int row, int col);
+  bool IsTraversableTile(int row, int col) const;
 
 private:
   /** Stores all the tile values for the map. */
