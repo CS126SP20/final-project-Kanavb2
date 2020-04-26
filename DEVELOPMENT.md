@@ -30,11 +30,12 @@
 * Finally figured out a way to make the camera follow the player
 * Fixed code style using feedback from Week 1's code review
 * Refactored statistics to be stored in a struct instead of a class as it stores POD
+* Add a placeholder for an inventory and currency
+* Move image files from resources to assets for windows compatibility
 
 ### To do:
 * Add npc sprites
 * Add npcs throughout the map
 * Add a save state
-* Introduce a currency system
 * Make a menu of sorts
 * Figure out combat system

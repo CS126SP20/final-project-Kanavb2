@@ -84,7 +84,7 @@ void IslandApp::DrawPlayer() const {
 
 void IslandApp::DrawMap() const {
   auto map = cinder::gl::Texture::create
-      (cinder::loadImage("resources/map.png"));
+      (cinder::loadImage("assets/map.png"));
   cinder::gl::draw(map, Rectf( 0,
                                 0,
                                 kMapTileSize * kScreenSize,
@@ -118,13 +118,13 @@ cinder::gl::TextureRef IslandApp::GetPlayerDirectionImage() const {
 string IslandApp::GetDownDirectionImage() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
-      return "resources/down_nomove.png";
+      return "assets/down_nomove.png";
     case 1 :
-      return "resources/down_left.png";
+      return "assets/down_left.png";
     case 2 :
-      return "resources/down_nomove.png";
+      return "assets/down_nomove.png";
     case 3 :
-      return "resources/down_right.png";
+      return "assets/down_right.png";
   }
   return "";
 }
@@ -132,13 +132,13 @@ string IslandApp::GetDownDirectionImage() const {
 string IslandApp::GetUpDirectionImage() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
-      return "resources/up_nomove.png";
+      return "assets/up_nomove.png";
     case 1 :
-      return "resources/up_left.png";
+      return "assets/up_left.png";
     case 2 :
-      return "resources/up_nomove.png";
+      return "assets/up_nomove.png";
     case 3 :
-      return "resources/up_right.png";
+      return "assets/up_right.png";
   }
   return "";
 }
@@ -146,13 +146,13 @@ string IslandApp::GetUpDirectionImage() const {
 string IslandApp::GetLeftDirectionImage() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
-      return "resources/left_nomove.png";
+      return "assets/left_nomove.png";
     case 1 :
-      return "resources/left_left.png";
+      return "assets/left_left.png";
     case 2 :
-      return "resources/left_nomove.png";
+      return "assets/left_nomove.png";
     case 3 :
-      return "resources/left_right.png";
+      return "assets/left_right.png";
   }
   return "";
 }
@@ -160,13 +160,13 @@ string IslandApp::GetLeftDirectionImage() const {
 string IslandApp::GetRightDirectionImage() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
-      return "resources/right_nomove.png";
+      return "assets/right_nomove.png";
     case 1 :
-      return "resources/right_left.png";
+      return "assets/right_left.png";
     case 2 :
-      return "resources/right_nomove.png";
+      return "assets/right_nomove.png";
     case 3 :
-      return "resources/right_right.png";
+      return "assets/right_right.png";
   }
   return "";
 }
