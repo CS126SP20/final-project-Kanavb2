@@ -3,13 +3,15 @@
 #include <island/engine.h>
 #include <island/location.h>
 
-#include <utility>
-
 namespace island {
 
-Engine::Engine(size_t width, size_t height)
-    :   player_ {Player("meow", {7, 7},
-        {10,10,10,10})},
+Engine::Engine(size_t width, size_t height,
+    const std::string& player_name,
+    const Location& player_loc,
+    const Statistics& player_stats,
+    const std::vector<Item>& player_inventory, size_t player_money)
+    :   player_ {Player(player_name, player_loc, player_stats, player_inventory,
+                    player_money)},
         width_{width},
         height_{height},
         direction_{Direction::kRight} {}
@@ -31,7 +33,8 @@ void Engine::ExecuteTimeStep() {
   Location direction_loc = FromDirection(direction_);
   Location new_loc =
       (player_.location_ + direction_loc) % Location(height_, width_);
-  player_.location_ = new_loc;
+  player_.location_.SetRow(new_loc.GetRow());
+  player_.location_.SetCol(new_loc.GetCol());
 }
 
 void Engine::Save() {

@@ -18,9 +18,12 @@ using std::chrono::system_clock;
 using std::string;
 
 IslandApp::IslandApp()
-    : engine_{island::kMapSize, island::kMapSize},
+    : engine_{island::kMapSize, island::kMapSize, "meow",
+              {7, 0},
+              {10, 10, 10, 10},
+              std::vector<island::Item>(),
+              0},
       state_{GameState::kPlaying},
-      player_name_{"meow"},
       speed_{kSpeed},
       last_changed_direction_{0},
       is_changed_direction_{false},

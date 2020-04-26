@@ -34,6 +34,7 @@
 ### To do:
 * Add npc sprites
 * Add npcs throughout the map
+* Add a save state
 * Introduce a currency system
 * Make a menu of sorts
 * Figure out combat system

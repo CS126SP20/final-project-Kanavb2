@@ -10,6 +10,7 @@
 #include <island/direction.h>
 #include <island/location.h>
 #include <island/map.h>
+#include <island/item.h>
 
 #include <string>
 
@@ -145,9 +146,6 @@ private:
 
   /** The speed or delay of the game, i.e. a lesser value is faster. */
   size_t speed_;
-
-  /** The name of the player. */
-  std::string player_name_;
 
   /**
    * Determines whether the user changed their direction

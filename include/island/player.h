@@ -4,22 +4,38 @@
 #define ISLAND_PLAYER_H_
 
 #include <utility>
-#include <string>
 
 #include "location.h"
 #include "statistics.h"
+#include "item.h"
 
 namespace island {
 /** Represents a player in the game. */
 struct Player {
-  Player(std::string name, Location location, Statistics statistics)
-        : name_(std::move(name)),
+  /** Constructor for the player. */
+  Player(const std::string& name, const Location& location,
+      const Statistics& statistics, const std::vector<Item>& inventory,
+      size_t money)
+        : name_(name),
           location_(location),
-          statistics_(statistics){}
+          statistics_(statistics),
+          inventory_(inventory),
+          money_(money) {}
 
-  std::string name_;
+  /** The name of the player. */
+  const std::string& name_;
+
+  /** The current location of the player. */
   Location location_;
-  Statistics statistics_;
+
+  /** The statistics for the player, used in combat. */
+  const Statistics& statistics_;
+
+  /** The player's inventory with all of their items. */
+  const std::vector<Item>& inventory_;
+
+  /** The amount of money the player has. */
+  size_t money_;
 };
 
 }  // namespace island

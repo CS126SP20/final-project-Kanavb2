@@ -8,6 +8,7 @@
 #include "map.h"
 
 #include <cstddef>
+#include <string>
 
 namespace island {
 
@@ -16,13 +17,23 @@ namespace island {
  */
 class Engine {
  public:
+
   /**
    * Creates a new game for the island.
    *
    * @param width the width of the island map
    * @param height the height of the island map
+   * @param player_name the name of the player
+   * @param player_loc the location of the player
+   * @param player_stats the statistics of the player
+   * @param player_inventory the list of items the player has
+   * @param player_money the amount of money the player has
    */
-  Engine(size_t width, size_t height);
+  Engine(size_t width, size_t height,
+         const std::string& player_name,
+         const Location& player_loc,
+         const Statistics& player_stats,
+         const std::vector<Item>& player_inventory, size_t player_money);
 
   /** Executes a time step, moves the player character. */
   void ExecuteTimeStep();
