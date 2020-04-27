@@ -13,10 +13,19 @@ const size_t kMapSize = 50;
 /** Represents each tile in the map. */
 enum Tile {
   kGrass,
-  kPath,
+  kRoad,
+  kSand,
+  kCold,
+  kFarm,
   kWater,
-  kFence,
+  kPuddle,
+  kTree,
+  kNotice,
+  kMailBox,
+  kBarrier,
   kHouse,
+  kOpenDoor,
+  kClosedDoor,
   kInvalid,
   kNpc
 };
