@@ -3,7 +3,7 @@
 #ifndef ISLAND_MAP_H_
 #define ISLAND_MAP_H_
 
-#include <array>
+#include <vector>
 
 namespace island {
 
@@ -27,6 +27,7 @@ enum Tile {
   kOpenDoor,
   kClosedDoor,
   kInvalid,
+  kExtreme,
   kNpc
 };
 
@@ -47,7 +48,7 @@ public:
 
 private:
   /** Stores all the tile values for the map. */
-  std::array<std::array<Tile, kMapSize>, kMapSize> raw_map_;
+  std::vector<std::vector<Tile>> raw_map_;
 };
 
 }  // namespace island
