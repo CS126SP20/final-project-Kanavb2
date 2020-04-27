@@ -3,6 +3,8 @@
 #ifndef ISLAND_MAP_H_
 #define ISLAND_MAP_H_
 
+#include <island/location.h>
+
 #include <vector>
 
 namespace island {
@@ -44,7 +46,15 @@ public:
    * @param y the y coordinate of the tile the user wants to move to
    * @return whether or not the tile is traversable
    */
-  bool IsTraversableTile(int row, int col) const;
+  bool IsTraversableTile(const Location& location) const;
+
+  /**
+   * Gets the tile type at the specified location on the map
+   *
+   * @param location the location at which the tile type is required
+   * @return the tile type as a Tile enum object
+   */
+  Tile GetTile(const Location& location) const;
 
 private:
   /** Stores all the tile values for the map. */

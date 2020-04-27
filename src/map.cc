@@ -1,8 +1,8 @@
 // Copyright (c) 2020 Kanav Bhatnagar. All rights reserved.
 
-#include <fstream>
-
 #include <island/map.h>
+
+#include <fstream>
 
 namespace island {
   Map::Map() {
@@ -83,10 +83,14 @@ namespace island {
     }
   }
 
-  bool Map::IsTraversableTile(int row, int col) const {
-    return raw_map_[row][col] == kGrass
-    || raw_map_[row][col] == kRoad
-    || raw_map_[row][col] == kSand
-    || raw_map_[row][col] == kPuddle;
+  bool Map::IsTraversableTile(const Location& location) const {
+    return raw_map_[location.GetRow()][location.GetCol()] == kGrass
+    || raw_map_[location.GetRow()][location.GetCol()] == kRoad
+    || raw_map_[location.GetRow()][location.GetCol()] == kSand
+    || raw_map_[location.GetRow()][location.GetCol()] == kPuddle;
+  }
+
+  Tile Map::GetTile(const Location& location) const {
+    return raw_map_[location.GetRow()][location.GetCol()];
   }
 }  // namespace island

@@ -46,7 +46,16 @@ bool Engine::IsValidDirection(const Direction &direction) const {
   Location new_loc =
       (player_.location_ + direction_loc) % Location(height_, width_);
 
-  return map_.IsTraversableTile(new_loc.GetRow(), new_loc.GetCol());
+  return map_.IsTraversableTile(new_loc);
+}
+
+Location Engine::GetFacingLocation(const Direction& direction) const {
+  Location direction_loc = FromDirection(direction);
+  return (player_.location_ + direction_loc) % Location(height_, width_);
+}
+
+Tile Engine::GetTileType(const Location& location) const {
+  return map_.GetTile(location);
 }
 
 }  // namespace island

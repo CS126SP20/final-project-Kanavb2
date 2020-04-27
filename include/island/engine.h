@@ -47,6 +47,22 @@ class Engine {
   /** Determines whether the direction the player wants to move in is valid. */
   bool IsValidDirection(const Direction& direction) const;
 
+  /**
+   * Gets the location the player is facing
+   *
+   * @param direction the last direction the player moved in
+   * @return the location the player is looking at
+   */
+  Location GetFacingLocation(const Direction& direction) const;
+
+  /**
+   * Gets the tile type at the specified location on the map
+   *
+   * @param location the location at which the tile type is required
+   * @return the tile type as a Tile enum object
+   */
+  Tile GetTileType(const Location& location) const;
+
   /** Changes the direction of the player character with each step. */
   inline void SetDirection(const Direction& direction) {
     direction_ = direction;

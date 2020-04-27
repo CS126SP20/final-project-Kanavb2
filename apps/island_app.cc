@@ -232,6 +232,10 @@ void IslandApp::keyDown(KeyEvent event) {
         state_ = GameState::kPlaying;
       }
     }
+
+    case KeyEvent::KEY_z: {
+      HandlePlayerInteractions();
+    }
   }
 }
 
@@ -250,5 +254,11 @@ void IslandApp::HandleMovement(Direction direction) {
   is_changed_direction_ = true;
   engine_.SetDirection(direction);
 }
+
+void IslandApp::HandlePlayerInteractions() const {
+  Location facing_tile = engine_.GetFacingLocation(prev_direction_);
+
+}
+
 
 }  // namespace islandapp

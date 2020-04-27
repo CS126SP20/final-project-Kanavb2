@@ -82,14 +82,6 @@ private:
   void DrawMap() const;
 
   /**
-   * Determines what the program should do when one of the
-   * movement directed keys is pressed on the keyboard.
-   *
-   * @param direction the direction to move in
-   */
-  void HandleMovement(island::Direction direction);
-
-  /**
    * Handles the movement of the camera with respect to the player.
    * Makes sure the camera cannot move out of the map area.
    */
@@ -134,6 +126,16 @@ private:
    * @return the string containing the correct image path to be displayed
    */
   std::string GetRightDirectionImage() const;
+
+  /**
+   * Determines what the program should do when one of the
+   * movement directed keys is pressed on the keyboard.
+   *
+   * @param direction the direction to move in
+   */
+  void HandleMovement(island::Direction direction);
+
+  void HandlePlayerInteractions() const;
 
   /** The game engine responsible for running the game. */
   island::Engine engine_;
