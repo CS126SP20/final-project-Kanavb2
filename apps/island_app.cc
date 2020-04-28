@@ -41,6 +41,7 @@ IslandApp::IslandApp()
               0},
       state_{GameState::kPlaying},
       speed_{kSpeed},
+      char_counter_{0},
       last_changed_direction_{0},
       is_changed_direction_{false},
       prev_direction_{Direction::kDown},
@@ -106,20 +107,37 @@ void IslandApp::DrawMap() const {
                                 kMapTileSize * kScreenSize));
 }
 
-void IslandApp::DrawTextBox() const {
+void IslandApp::DrawTextBox() {
   const cinder::vec2 center = getWindowCenter();
-  const int height = getWindowHeight();
+  const double width = getWindowWidth();
+  const double height = getWindowHeight();
   const cinder::ivec2 size = {kTextBoxWidth, kTextBoxHeight};
   const Color color = Color::black();
+  auto text_box = cinder::gl::Texture::create
+      (cinder::loadImage("assets/text_box.png"));
 
-  PrintText(display_text_, color, size, {center.x, height});
+  if (char_counter_ < display_text_.size()) {
+    char_counter_ +=  kCharSpeed;
+  }
+  string to_display = display_text_.substr(0, char_counter_);
+
+  Translate(true);
+  cinder::gl::draw(text_box, Rectf( 0,
+                              (center.y + height *
+                              kTextLocMultiplier) / (kTextLocMultiplier + 1.0),
+                              width,
+                              height));
+  PrintText(to_display, color, size, {width, height});
+  Translate(false);
 }
 
 template <typename C>
-void IslandApp::PrintText(const string& text, const C& color, const cinder::ivec2& size,
-               const cinder::vec2& loc) const {
+void IslandApp::PrintText(const string& text, const C& color,
+    const cinder::ivec2& size, const cinder::vec2& loc) const {
   cinder::gl::color(color);
-
+  const cinder::vec2 center = getWindowCenter();
+  const double width = getWindowWidth();
+  const double height = getWindowHeight();
   auto box = TextBox()
       .alignment(TextBox::LEFT)
       .font(cinder::Font(kNormalFont, kFontSize))
@@ -129,13 +147,14 @@ void IslandApp::PrintText(const string& text, const C& color, const cinder::ivec
       .text(text);
 
   const auto box_size = box.getSize();
-  const cinder::vec2 moved_location = {loc.x - box_size.x / kScreenDivider,
-                                        loc.y - box_size.y / kScreenDivider};
 
   const auto texture = cinder::gl::Texture::create(box.render());
-  Translate(true);
-  cinder::gl::draw(texture, moved_location);
-  Translate(false);
+  cinder::gl::draw(texture,
+      Rectf( kTextOffset,
+             (center.y + height * kTextLocMultiplier) /
+                    (kTextLocMultiplier + 1.0) + kTextOffset,
+             width,
+             height));
 }
 
 void IslandApp::Translate(bool is_up) const {
@@ -291,10 +310,20 @@ void IslandApp::keyDown(KeyEvent event) {
       } else {
         state_ = GameState::kPlaying;
       }
+      break;
     }
 
     case KeyEvent::KEY_z: {
+      if (state_ == GameState::kDisplayingText
+        && char_counter_ != display_text_.size()) {
+        char_counter_ = display_text_.size();
+        return;
+      } else {
+        char_counter_ = 0;
+      }
+
       HandlePlayerInteractions();
+      break;
     }
   }
 }
@@ -328,12 +357,13 @@ void IslandApp::HandlePlayerInteractions() {
     state_ = GameState::kPlaying;
   } else if (state_ == GameState::kPlaying){
     state_ = GameState::kDisplayingText;
-    file_path = GetDisplayText(facing_tile);
+    file_path = GetDisplayFile(facing_tile);
+    display_text_ = file_path;
   }
 }
 
-string IslandApp::GetDisplayText(const Tile& tile) const {
-  return "";
+string IslandApp::GetDisplayFile(const Tile& tile) const {
+  return "meow";
 }
 
 }  // namespace islandapp

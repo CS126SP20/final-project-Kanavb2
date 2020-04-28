@@ -36,6 +36,10 @@
 ### 4/26/20
 * Completed tile mapping throughout the map, assigned tiles characteristics using an enum, might change some enum values in the future
 
+### 4/27/20
+* Enabled user to interact with map
+* Added a text displaying system using basic cinder text boxes
+
 ### To do:
 * Add npc sprites
 * Add npcs throughout the map

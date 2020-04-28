@@ -52,7 +52,16 @@ public:
   const size_t kTextBoxWidth = 800;
 
   /** The height of the text box to be displayed. */
-  const size_t kTextBoxHeight = 200;
+  const size_t kTextBoxHeight = 150;
+
+  /** The speed at which characters are displayed in the text box. */
+  const size_t kCharSpeed = 1;
+
+  /** Determines how far down the text box is placed, higher is further down. */
+  const float kTextLocMultiplier = 2.0;
+
+  /** The number of pixels the text is offset from the textbox. */
+  const size_t kTextOffset = 10;
 
   /** The multiplier for how many pixels the camera translates the view. */
   const float kTranslationMultiplier = 40.0;
@@ -94,7 +103,7 @@ private:
   /**
    * Draws the text box that displays the player's interaction text.
    */
-  void DrawTextBox() const;
+  void DrawTextBox();
 
   /**
    * Called whenever the user is shown a text box.
@@ -178,11 +187,12 @@ private:
 
   /**
    * Determines the text to be displayed when the player interacts with the map
+   * by retrieving the file associated with the tile.
    *
    * @param tile the tile with which the player interacts
    * @return the file path storing the text to be displayed
    */
-  std::string GetDisplayText(const island::Tile& tile) const;
+  std::string GetDisplayFile(const island::Tile& tile) const;
 
   /** The game engine responsible for running the game. */
   island::Engine engine_;
@@ -195,6 +205,9 @@ private:
 
   /** The speed or delay of the game, i.e. a lesser value is faster. */
   size_t speed_;
+
+  /** Keeps track of the characters to be displayed in a text message. */
+  size_t char_counter_;
 
   /**
    * Determines whether the user changed their direction
