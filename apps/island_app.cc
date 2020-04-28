@@ -358,12 +358,47 @@ void IslandApp::HandlePlayerInteractions() {
   } else if (state_ == GameState::kPlaying){
     state_ = GameState::kDisplayingText;
     file_path = GetDisplayFile(facing_tile);
-    display_text_ = file_path;
+
+    if (file_path.empty()) {
+      state_ = GameState::kPlaying;
+      return;
+    }
+    display_text_ = GetTextFromFile(file_path);
   }
 }
 
 string IslandApp::GetDisplayFile(const Tile& tile) const {
-  return "meow";
+  switch (tile) {
+    case island::kCold:
+      return "assets/cold.txt";
+    case island::kFarm:
+      return "assets/farm.txt";
+    case island::kWater:
+      return "assets/water.txt";
+    case island::kPuddle:
+      return "assets/puddle.txt";
+    case island::kTree:
+      return "assets/flora.txt";
+    case island::kNotice:
+      return "assets/notice.txt";
+    case island::kMailBox:
+      return "assets/mail_box.txt";
+    case island::kClosedDoor:
+      return "assets/closed_door.txt";
+    case island::kExtreme:
+      return "assets/extreme.txt";
+    case island::kNpc:
+      break;
+    default: return "";
+  }
+  return "";
+}
+
+std::string IslandApp::GetTextFromFile(const std::string& file_path) const {
+  std::ifstream file(file_path);
+  std::string display_text;
+  std::getline(file, display_text, '\0');
+  return display_text;
 }
 
 }  // namespace islandapp

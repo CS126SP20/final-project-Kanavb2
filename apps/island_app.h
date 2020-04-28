@@ -1,7 +1,7 @@
 // Copyright (c) 2020 CS126SP20. All rights reserved.
 
-#ifndef FINALPROJECT_APPS_MYAPP_H_
-#define FINALPROJECT_APPS_MYAPP_H_
+#ifndef FINALPROJECT_APPS_ISLANDAPP_H_
+#define FINALPROJECT_APPS_ISLANDAPP_H_
 
 #include <cinder/app/App.h>
 #include <cinder/gl/gl.h>
@@ -13,6 +13,7 @@
 #include <island/item.h>
 
 #include <string>
+#include <fstream>
 
 namespace islandapp {
 
@@ -194,6 +195,14 @@ private:
    */
   std::string GetDisplayFile(const island::Tile& tile) const;
 
+  /**
+   * Retrieves the text from a file.
+   *
+   * @param file_path the path to the file to be read from
+   * @return the text stored in the file
+   */
+  std::string GetTextFromFile(const std::string& file_path) const;
+
   /** The game engine responsible for running the game. */
   island::Engine engine_;
 
@@ -233,4 +242,4 @@ private:
 
 }  // namespace islandapp
 
-#endif  // FINALPROJECT_APPS_MYAPP_H_
+#endif  // FINALPROJECT_APPS_ISLANDAPP_H_
