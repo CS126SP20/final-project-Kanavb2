@@ -20,6 +20,7 @@ namespace islandapp {
 enum class GameState {
   kPlaying,
   kPaused,
+  kDisplayingText,
   kMenu
 };
 
@@ -43,6 +44,15 @@ public:
 
   /** The divider for how much of the total screen the user should view. */
   const size_t kScreenDivider = 2;
+
+  /** The font size of the text to be displayed to the user. */
+  const size_t kFontSize = 30;
+
+  /** The width of the text box to be displayed. */
+  const size_t kTextBoxWidth = 800;
+
+  /** The height of the text box to be displayed. */
+  const size_t kTextBoxHeight = 200;
 
   /** The multiplier for how many pixels the camera translates the view. */
   const float kTranslationMultiplier = 40.0;
@@ -80,6 +90,31 @@ private:
    * Draws the map in the background of the game.
    */
   void DrawMap() const;
+
+  /**
+   * Draws the text box that displays the player's interaction text.
+   */
+  void DrawTextBox() const;
+
+  /**
+   * Called whenever the user is shown a text box.
+   *
+   * @tparam C The typename for the color of the text
+   * @param text the text to be displayed
+   * @param color the color of the text
+   * @param size the size of the text
+   * @param loc the location on the screen where the text is to be displayed
+   */
+  template <typename C>
+  void PrintText(const std::string& text, const C& color,
+                  const cinder::ivec2& size, const cinder::vec2& loc) const;
+
+  /**
+   * Translates the outputted image and text.
+   *
+   * @param is_up true if the translation is upward, false otherwise
+   */
+  void Translate(bool is_up) const;
 
   /**
    * Handles the movement of the camera with respect to the player.
@@ -133,9 +168,21 @@ private:
    *
    * @param direction the direction to move in
    */
-  void HandleMovement(island::Direction direction);
+  void HandleMovement(const island::Direction& direction);
 
-  void HandlePlayerInteractions() const;
+  /**
+   * Handles the player's interactions with the map, displays text on the
+   * screen accordingly.
+   */
+  void HandlePlayerInteractions();
+
+  /**
+   * Determines the text to be displayed when the player interacts with the map
+   *
+   * @param tile the tile with which the player interacts
+   * @return the file path storing the text to be displayed
+   */
+  std::string GetDisplayText(const island::Tile& tile) const;
 
   /** The game engine responsible for running the game. */
   island::Engine engine_;
@@ -163,6 +210,9 @@ private:
 
   /** The previous direction that the user moved in. */
   island::Direction prev_direction_;
+
+  /** The text to be displayed when the player interacts with the map. */
+  std::string display_text_;
 
   /** The location object to offset the rendering by, illusion of a camera. */
   island::Location camera_;

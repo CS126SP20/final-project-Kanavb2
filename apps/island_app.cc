@@ -6,13 +6,29 @@
 #include <cinder/app/App.h>
 #include <cinder/gl/draw.h>
 
+#if defined(CINDER_COCOA_TOUCH)
+const char kNormalFont[] = "Arial";
+const char kBoldFont[] = "Arial-BoldMT";
+const char kDifferentFont[] = "AmericanTypewriter";
+#elif defined(CINDER_LINUX)
+const char kNormalFont[] = "Arial Unicode MS";
+const char kBoldFont[] = "Arial Unicode MS";
+const char kDifferentFont[] = "Purisa";
+#else
+const char kNormalFont[] = "Arial";
+const char kBoldFont[] = "Arial Bold";
+#endif
+
 namespace islandapp {
 
 using cinder::Color;
 using cinder::Rectf;
+using cinder::TextBox;
+using cinder::ColorA;
 using cinder::app::KeyEvent;
 using island::Direction;
 using island::Location;
+using island::Tile;
 using std::chrono::seconds;
 using std::chrono::system_clock;
 using std::string;
@@ -61,16 +77,15 @@ void IslandApp::draw() {
   cinder::gl::enableAlphaBlending();
   cinder::gl::clear();
   cinder::gl::color(Color(1,1,1));
-  cinder::gl::translate(
-      - (camera_.GetRow() * kTranslationMultiplier),
-      - (camera_.GetCol() * kTranslationMultiplier));
+  Translate(false);
 
   DrawMap();
   DrawPlayer();
+  if (state_ == GameState::kDisplayingText) {
+    DrawTextBox();
+  }
 
-  cinder::gl::translate(
-      (camera_.GetRow() * kTranslationMultiplier),
-      (camera_.GetCol() * kTranslationMultiplier));
+  Translate(true);
 }
 
 void IslandApp::DrawPlayer() const {
@@ -89,6 +104,51 @@ void IslandApp::DrawMap() const {
                                 0,
                                 kMapTileSize * kScreenSize,
                                 kMapTileSize * kScreenSize));
+}
+
+void IslandApp::DrawTextBox() const {
+  const cinder::vec2 center = getWindowCenter();
+  const int height = getWindowHeight();
+  const cinder::ivec2 size = {kTextBoxWidth, kTextBoxHeight};
+  const Color color = Color::black();
+
+  PrintText(display_text_, color, size, {center.x, height});
+}
+
+template <typename C>
+void IslandApp::PrintText(const string& text, const C& color, const cinder::ivec2& size,
+               const cinder::vec2& loc) const {
+  cinder::gl::color(color);
+
+  auto box = TextBox()
+      .alignment(TextBox::LEFT)
+      .font(cinder::Font(kNormalFont, kFontSize))
+      .size(size)
+      .color(color)
+      .backgroundColor(ColorA(0, 0, 0, 0))
+      .text(text);
+
+  const auto box_size = box.getSize();
+  const cinder::vec2 moved_location = {loc.x - box_size.x / kScreenDivider,
+                                        loc.y - box_size.y / kScreenDivider};
+
+  const auto texture = cinder::gl::Texture::create(box.render());
+  Translate(true);
+  cinder::gl::draw(texture, moved_location);
+  Translate(false);
+}
+
+void IslandApp::Translate(bool is_up) const {
+  float direction;
+  if (is_up) {
+    direction = 1.0;
+  } else {
+    direction = -1.0;
+  }
+
+  cinder::gl::translate(
+      direction * (camera_.GetRow() * kTranslationMultiplier),
+      direction * (camera_.GetCol() * kTranslationMultiplier));
 }
 
 cinder::gl::TextureRef IslandApp::GetPlayerDirectionImage() const {
@@ -239,7 +299,11 @@ void IslandApp::keyDown(KeyEvent event) {
   }
 }
 
-void IslandApp::HandleMovement(Direction direction) {
+void IslandApp::HandleMovement(const Direction& direction) {
+  if (state_ == GameState::kDisplayingText) {
+    return;
+  }
+
   if (prev_direction_ == direction) {
     last_changed_direction_++;
   } else {
@@ -255,10 +319,21 @@ void IslandApp::HandleMovement(Direction direction) {
   engine_.SetDirection(direction);
 }
 
-void IslandApp::HandlePlayerInteractions() const {
-  Location facing_tile = engine_.GetFacingLocation(prev_direction_);
+void IslandApp::HandlePlayerInteractions() {
+  Location facing_location = engine_.GetFacingLocation(prev_direction_);
+  Tile facing_tile = engine_.GetTileType(facing_location);
+  string file_path;
 
+  if (state_ == GameState::kDisplayingText) {
+    state_ = GameState::kPlaying;
+  } else if (state_ == GameState::kPlaying){
+    state_ = GameState::kDisplayingText;
+    file_path = GetDisplayText(facing_tile);
+  }
 }
 
+string IslandApp::GetDisplayText(const Tile& tile) const {
+  return "";
+}
 
 }  // namespace islandapp
