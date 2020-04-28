@@ -58,4 +58,17 @@ Tile Engine::GetTileType(const Location& location) const {
   return map_.GetTile(location);
 }
 
+void Engine::AddInventoryItem(const Item& item) {
+  player_.inventory_.push_back(item);
+}
+
+void Engine::RemoveInventoryItem(const Item &item) {
+  for (size_t index = 0; index < player_.inventory_.size(); index++) {
+    if (player_.inventory_[index].name_ == item.name_) {
+      player_.inventory_.erase(player_.inventory_.begin() + index);
+      break;
+    }
+  }
+}
+
 }  // namespace island

@@ -14,7 +14,7 @@ namespace island {
 struct Player {
   /** Constructor for the player. */
   Player(const std::string& name, const Location& location,
-      const Statistics& statistics, const std::vector<Item>& inventory,
+      const Statistics& statistics, std::vector<Item>& inventory,
       size_t money)
         : name_(name),
           location_(location),
@@ -32,7 +32,7 @@ struct Player {
   const Statistics& statistics_;
 
   /** The player's inventory with all of their items. */
-  const std::vector<Item>& inventory_;
+  std::vector<Item>& inventory_;
 
   /** The amount of money the player has. */
   size_t money_;

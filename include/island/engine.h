@@ -69,6 +69,20 @@ class Engine {
   }
 
   /**
+   * Adds the specified item to the player's inventory.
+   *
+   * @param item the item to be added
+   */
+  void AddInventoryItem(const Item& item);
+
+  /**
+   * Removes the specified item from the player's inventory
+   *
+   * @param item the item to be removed
+   */
+  void RemoveInventoryItem(const Item& item);
+
+  /**
    * Accessor function for the player in the game.
    *
    * @return the player in the game engine

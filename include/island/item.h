@@ -9,13 +9,22 @@
 
 namespace island {
 
-/** Represents the inventory of the player. */
-class Item {
+/** Represents each item in the inventory of the player. */
+struct Item {
+  /**
+   * The default constructor for the Item.
+   *
+   * @param name the name of the item
+   * @param description the description of the item
+   */
   Item(const std::string& name, const std::string& description)
   : name_(name),
     description_(description) {}
 
+  /** The name of the item. */
   const std::string& name_;
+
+  /** The description of the item. */
   const std::string& description_;
 };
 

@@ -51,12 +51,22 @@ class Location {
     return col_;
   }
 
-  inline void SetRow(int set) {
-    row_ = set;
+  /**
+   * Sets the row index of the location to a new value.
+   *
+   * @param value the value to set the row to
+   */
+  inline void SetRow(int value) {
+    row_ = value;
   }
 
-  inline void SetCol(int set) {
-    col_ = set;
+  /**
+   * Sets the column index of the location to a new value.
+   *
+   * @param value the value to set the column to
+   */
+  inline void SetCol(int value) {
+    col_ = value;
   }
 
  private:
