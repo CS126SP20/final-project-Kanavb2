@@ -3,7 +3,6 @@
 #include "island_app.h"
 
 #include <cinder/ImageIo.h>
-#include <cinder/app/App.h>
 #include <cinder/gl/draw.h>
 
 #if defined(CINDER_COCOA_TOUCH)
@@ -35,7 +34,7 @@ using std::string;
 
 IslandApp::IslandApp()
     : engine_{island::kMapSize, island::kMapSize, "meow",
-              {7, 0},
+              {10, 4},
               {10, 10, 10, 10},
               std::vector<island::Item>(),
               0},
@@ -49,6 +48,15 @@ IslandApp::IslandApp()
       {}
 
 void IslandApp::setup() {
+  cinder::audio::SourceFileRef background_src = cinder::audio::load
+      (cinder::app::loadAsset("Loneliness.mp3"));
+  background_audio_ = cinder::audio::Voice::create(background_src);
+  background_audio_->start();
+
+  cinder::audio::SourceFileRef text_src = cinder::audio::load
+      (cinder::app::loadAsset("text_sound.wav"));
+  text_audio_ = cinder::audio::Voice::create(text_src);
+
   cinder::gl::disableDepthRead();
   cinder::gl::disableDepthWrite();
 }
@@ -67,14 +75,14 @@ void IslandApp::update() {
     last_time_ = time;
   }
 
+  if (!background_audio_->isPlaying()) {
+    background_audio_->start();
+  }
+
   HandleCameraInteractions();
 }
 
 void IslandApp::draw() {
-  if (state_ == GameState::kPaused) {
-    return;
-  }
-
   cinder::gl::enableAlphaBlending();
   cinder::gl::clear();
   cinder::gl::color(Color(1,1,1));
@@ -118,6 +126,7 @@ void IslandApp::DrawTextBox() {
 
   if (char_counter_ < display_text_.size()) {
     char_counter_ +=  kCharSpeed;
+    text_audio_->start();
   }
   string to_display = display_text_.substr(0, char_counter_);
 

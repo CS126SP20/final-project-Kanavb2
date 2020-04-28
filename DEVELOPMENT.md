@@ -39,6 +39,7 @@
 ### 4/27/20
 * Enabled user to interact with map
 * Added a text displaying system using basic cinder text boxes
+* Added background music and short character text audio
 
 ### To do:
 * Add npc sprites

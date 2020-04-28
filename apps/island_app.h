@@ -4,6 +4,7 @@
 #define FINALPROJECT_APPS_ISLANDAPP_H_
 
 #include <cinder/app/App.h>
+#include <cinder/audio/Voice.h>
 #include <cinder/gl/gl.h>
 
 #include <island/engine.h>
@@ -238,6 +239,12 @@ private:
 
   /** The location object to offset the rendering by, illusion of a camera. */
   island::Location camera_;
+
+  /** The handler for the background audio. */
+  cinder::audio::VoiceRef background_audio_;
+
+  /** The handler for the text displaying audio. */
+  cinder::audio::VoiceRef text_audio_;
 };
 
 }  // namespace islandapp
