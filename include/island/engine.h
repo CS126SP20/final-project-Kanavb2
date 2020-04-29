@@ -23,6 +23,7 @@ class Engine {
    *
    * @param width the width of the island map
    * @param height the height of the island map
+   * @param items all the items in the game
    * @param player_name the name of the player
    * @param player_loc the location of the player
    * @param player_stats the statistics of the player
@@ -30,6 +31,7 @@ class Engine {
    * @param player_money the amount of money the player has
    */
   Engine(size_t width, size_t height,
+         std::vector<Item> items,
          const std::string& player_name,
          const Location& player_loc,
          const Statistics& player_stats,
@@ -76,11 +78,25 @@ class Engine {
   void AddInventoryItem(const Item& item);
 
   /**
-   * Removes the specified item from the player's inventory
+   * Removes the specified item from the player's inventory.
    *
    * @param item the item to be removed
    */
   void RemoveInventoryItem(const Item& item);
+
+  /**
+   * Adds the specified item to the list of items in the game.
+   *
+   * @param item the item to be added
+   */
+  void AddItem(const Item& item);
+
+  /**
+   * Removes the specified item from the list of items in the game.
+   *
+   * @param item the item to be removed
+   */
+  void RemoveItem(const Item& item);
 
   /**
    * Accessor function for an item in the player's inventory.
@@ -113,6 +129,9 @@ class Engine {
 
   /** The object representing the player character. */
   Player player_;
+
+  /** The list of all items in the game. */
+  std::vector<Item> items_;
 
   /** Map of the game. */
   Map map_;

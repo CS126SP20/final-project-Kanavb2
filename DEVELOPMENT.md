@@ -41,9 +41,11 @@
 * Added a text displaying system using basic cinder text boxes
 * Added background music and short character text audio
 
+### 4/28/20
+* Added an inventory to manage items and money
+
 ### To do:
 * Add npc sprites
 * Add npcs throughout the map
 * Add a save state
-* Make a menu of sorts
 * Figure out combat system

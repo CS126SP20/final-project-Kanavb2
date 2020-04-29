@@ -96,6 +96,16 @@ public:
 
 private:
   /**
+   * Initializes the audio objects that play through the game.
+   */
+  void InitializeAudio();
+
+  /**
+   * Initializes all the items that exist in the game.
+   */
+  void InitializeItems();
+
+  /**
    * Draws the player on the map.
    */
   void DrawPlayer() const;
@@ -116,6 +126,11 @@ private:
   void DrawInventory() const;
 
   /**
+   * Draws the items in the inventory.
+   */
+  void DrawItems() const;
+
+  /**
    * Called whenever the user is shown a text box.
    *
    * @tparam C The typename for the color of the text
@@ -127,8 +142,6 @@ private:
   template <typename C>
   void PrintText(const std::string& text, const C& color,
                   const cinder::ivec2& size, const cinder::vec2& loc) const;
-
-  void DrawItems() const;
 
   /**
    * Translates the outputted image and text.

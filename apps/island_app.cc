@@ -33,7 +33,9 @@ using std::chrono::system_clock;
 using std::string;
 
 IslandApp::IslandApp()
-    : engine_{island::kMapSize, island::kMapSize, "meow",
+    : engine_{island::kMapSize, island::kMapSize,
+              std::vector<island::Item>(),
+              "meow",
               {10, 4},
               {10, 10, 10, 10},
               std::vector<island::Item>(),
@@ -48,6 +50,14 @@ IslandApp::IslandApp()
       {}
 
 void IslandApp::setup() {
+  InitializeAudio();
+  InitializeItems();
+
+  cinder::gl::disableDepthRead();
+  cinder::gl::disableDepthWrite();
+}
+
+void IslandApp::InitializeAudio() {
   cinder::audio::SourceFileRef background_src = cinder::audio::load
       (cinder::app::loadAsset("background_music.mp3"));
   background_audio_ = cinder::audio::Voice::create(background_src);
@@ -56,9 +66,17 @@ void IslandApp::setup() {
   cinder::audio::SourceFileRef text_src = cinder::audio::load
       (cinder::app::loadAsset("text_sound.wav"));
   text_audio_ = cinder::audio::Voice::create(text_src);
+}
 
-  cinder::gl::disableDepthRead();
-  cinder::gl::disableDepthWrite();
+void IslandApp::InitializeItems() {
+  island::Item shoe("shoe", "<placeholder>", "assets/shoe.png");
+  engine_.AddInventoryItem(shoe);
+  island::Item sword("sword", "<placeholder>", "assets/sword.png");
+  engine_.AddInventoryItem(sword);
+  island::Item shield("shield", "<placeholder>", "assets/sword.png");
+  engine_.AddInventoryItem(shield);
+  island::Item heart("heart", "<placeholder>", "assets/heart.png");
+  engine_.AddInventoryItem(heart);
 }
 
 void IslandApp::update() {
@@ -192,12 +210,13 @@ void IslandApp::DrawItems() const {
         (cinder::loadImage
         (engine_.GetInventoryItem(ite).image_file_path_));
 
-    double offset = (double) ite * kMapTileSize;
+    // Magic number for testing, haven't figured out a general formula yet
+    double offset_start = (double) (ite) * 45 + 50;
     cinder::gl::draw(item_image,
-        Rectf(center.x / kScreenDivider + offset,
-              center.y / kScreenDivider + offset,
-              center.y / kScreenDivider + offset * kItemLocMultiplier,
-              center.y / kScreenDivider + offset * kItemLocMultiplier));
+        Rectf(center.x / kScreenDivider + offset_start,
+              center.y / kScreenDivider + 90,
+              center.x / kScreenDivider + offset_start + 35,
+              center.y / kScreenDivider + 140));
   }
 }
 
