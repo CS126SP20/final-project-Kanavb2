@@ -32,7 +32,7 @@ struct Player {
   const Statistics& statistics_;
 
   /** The player's inventory with all of their items. */
-  std::vector<Item>& inventory_;
+  std::vector<Item> inventory_;
 
   /** The amount of money the player has. */
   size_t money_;

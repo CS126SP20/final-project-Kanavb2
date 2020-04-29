@@ -49,7 +49,7 @@ IslandApp::IslandApp()
 
 void IslandApp::setup() {
   cinder::audio::SourceFileRef background_src = cinder::audio::load
-      (cinder::app::loadAsset("Loneliness.mp3"));
+      (cinder::app::loadAsset("background_music.mp3"));
   background_audio_ = cinder::audio::Voice::create(background_src);
   background_audio_->start();
 
@@ -92,6 +92,8 @@ void IslandApp::draw() {
   DrawPlayer();
   if (state_ == GameState::kDisplayingText) {
     DrawTextBox();
+  } else if (state_ == GameState::kInventory) {
+    DrawInventory();
   }
 
   Translate(true);
@@ -140,6 +142,22 @@ void IslandApp::DrawTextBox() {
   Translate(false);
 }
 
+void IslandApp::DrawInventory() const {
+  const cinder::vec2 center = getWindowCenter();
+  const double width = getWindowWidth();
+  const double height = getWindowHeight();
+
+  Translate(true);
+  auto inventory = cinder::gl::Texture::create
+      (cinder::loadImage("assets/inventory.png"));
+  cinder::gl::draw(inventory, Rectf(center.x / kScreenDivider,
+                               center.y / kScreenDivider,
+                              (center.x + width) / kScreenDivider,
+                              (center.y + height) / kScreenDivider));
+  DrawItems();
+  Translate(false);
+}
+
 template <typename C>
 void IslandApp::PrintText(const string& text, const C& color,
     const cinder::ivec2& size, const cinder::vec2& loc) const {
@@ -164,6 +182,23 @@ void IslandApp::PrintText(const string& text, const C& color,
                     (kTextLocMultiplier + 1.0) + kTextOffset,
              width,
              height));
+}
+
+void IslandApp::DrawItems() const {
+  const cinder::vec2 center = getWindowCenter();
+
+  for (size_t ite = 0; ite < engine_.GetPlayer().inventory_.size(); ite++) {
+    auto item_image = cinder::gl::Texture::create
+        (cinder::loadImage
+        (engine_.GetInventoryItem(ite).image_file_path_));
+
+    double offset = (double) ite * kMapTileSize;
+    cinder::gl::draw(item_image,
+        Rectf(center.x / kScreenDivider + offset,
+              center.y / kScreenDivider + offset,
+              center.y / kScreenDivider + offset * kItemLocMultiplier,
+              center.y / kScreenDivider + offset * kItemLocMultiplier));
+  }
 }
 
 void IslandApp::Translate(bool is_up) const {
@@ -334,11 +369,22 @@ void IslandApp::keyDown(KeyEvent event) {
       HandlePlayerInteractions();
       break;
     }
+
+    case KeyEvent::KEY_x: {
+      if (state_ == GameState::kDisplayingText) {
+        return;
+      } else if (state_ == GameState::kInventory) {
+        state_ = GameState::kPlaying;
+      } else {
+        state_ = GameState::kInventory;
+      }
+      break;
+    }
   }
 }
 
 void IslandApp::HandleMovement(const Direction& direction) {
-  if (state_ == GameState::kDisplayingText) {
+  if (state_ == GameState::kDisplayingText || state_ == GameState::kInventory) {
     return;
   }
 
@@ -358,16 +404,15 @@ void IslandApp::HandleMovement(const Direction& direction) {
 }
 
 void IslandApp::HandlePlayerInteractions() {
-  Location facing_location = engine_.GetFacingLocation(prev_direction_);
-  Tile facing_tile = engine_.GetTileType(facing_location);
-  string file_path;
-
   if (state_ == GameState::kDisplayingText) {
     state_ = GameState::kPlaying;
   } else if (state_ == GameState::kPlaying){
+    Location facing_location = engine_.GetFacingLocation(prev_direction_);
+    Tile facing_tile = engine_.GetTileType(facing_location);
+    string file_path;
+
     state_ = GameState::kDisplayingText;
     file_path = GetDisplayFile(facing_tile);
-
     if (file_path.empty()) {
       state_ = GameState::kPlaying;
       return;

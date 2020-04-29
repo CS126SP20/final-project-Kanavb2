@@ -6,7 +6,7 @@
 
 namespace island {
   Map::Map() {
-    std::ifstream map_file("assets/map_tileset");
+    std::ifstream map_file("assets/map_tileset.txt");
     char tile;
     for (size_t row = 0; row < kMapSize; row++) {
       raw_map_.emplace_back();

@@ -33,7 +33,7 @@ class Engine {
          const std::string& player_name,
          const Location& player_loc,
          const Statistics& player_stats,
-         const std::vector<Item>& player_inventory, size_t player_money);
+         std::vector<Item> player_inventory, size_t player_money);
 
   /** Executes a time step, moves the player character. */
   void ExecuteTimeStep();
@@ -81,6 +81,16 @@ class Engine {
    * @param item the item to be removed
    */
   void RemoveInventoryItem(const Item& item);
+
+  /**
+   * Accessor function for an item in the player's inventory.
+   *
+   * @param index the index of the item in the inventory
+   * @return the item to be retrieved
+   */
+  inline Item GetInventoryItem(size_t index) const {
+    return player_.inventory_[index];
+  }
 
   /**
    * Accessor function for the player in the game.

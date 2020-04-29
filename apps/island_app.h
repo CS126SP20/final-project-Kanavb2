@@ -23,7 +23,7 @@ enum class GameState {
   kPlaying,
   kPaused,
   kDisplayingText,
-  kMenu
+  kInventory
 };
 
 /** The class that interacts with cinder to run the game. */
@@ -64,6 +64,9 @@ public:
 
   /** The number of pixels the text is offset from the textbox. */
   const size_t kTextOffset = 10;
+
+  /** Determines how far across the items are displayed in the inventory. */
+  const float kItemLocMultiplier = 2.0;
 
   /** The multiplier for how many pixels the camera translates the view. */
   const float kTranslationMultiplier = 40.0;
@@ -108,6 +111,11 @@ private:
   void DrawTextBox();
 
   /**
+   * Draws the inventory which displays the player's items.
+   */
+  void DrawInventory() const;
+
+  /**
    * Called whenever the user is shown a text box.
    *
    * @tparam C The typename for the color of the text
@@ -119,6 +127,8 @@ private:
   template <typename C>
   void PrintText(const std::string& text, const C& color,
                   const cinder::ivec2& size, const cinder::vec2& loc) const;
+
+  void DrawItems() const;
 
   /**
    * Translates the outputted image and text.

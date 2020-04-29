@@ -9,7 +9,7 @@ Engine::Engine(size_t width, size_t height,
     const std::string& player_name,
     const Location& player_loc,
     const Statistics& player_stats,
-    const std::vector<Item>& player_inventory, size_t player_money)
+    std::vector<Item> player_inventory, size_t player_money)
     :   player_ {Player(player_name, player_loc, player_stats, player_inventory,
                     player_money)},
         width_{width},
