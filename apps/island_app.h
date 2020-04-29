@@ -60,7 +60,7 @@ public:
   const size_t kCharSpeed = 1;
 
   /** Determines how far down the text box is placed, higher is further down. */
-  const float kTextLocMultiplier = 2.0;
+  const double kTextLocMultiplier = 2.0;
 
   /** The number of pixels the text is offset from the textbox. */
   const size_t kTextOffset = 10;
@@ -69,7 +69,7 @@ public:
   const float kItemLocMultiplier = 2.0;
 
   /** The multiplier for how many pixels the camera translates the view. */
-  const float kTranslationMultiplier = 40.0;
+  const double kTranslationMultiplier = 40.0;
 
   /** The constructor for the game. */
   IslandApp();
@@ -154,7 +154,7 @@ private:
    * Handles the movement of the camera with respect to the player.
    * Makes sure the camera cannot move out of the map area.
    */
-  void HandleCameraInteractions();
+  void MovePlayerCamera();
 
   /**
    * Determines what the player character should look like
@@ -227,14 +227,29 @@ private:
    */
   std::string GetTextFromFile(const std::string& file_path) const;
 
-  /** The game engine responsible for running the game. */
-  island::Engine engine_;
-
   /** Represents the current state of the game. */
   GameState state_;
 
   /** The time elapsed since the update function has been called. */
   std::chrono::time_point<std::chrono::system_clock> last_time_;
+
+  /** The handler for the background audio. */
+  cinder::audio::VoiceRef background_audio_;
+
+  /** The handler for the text displaying audio. */
+  cinder::audio::VoiceRef text_audio_;
+
+  /** The game engine responsible for running the game. */
+  island::Engine engine_;
+
+  /** The previous direction that the user moved in. */
+  island::Direction prev_direction_;
+
+  /** The location object to offset the rendering by, illusion of a camera. */
+  island::Location camera_;
+
+  /** The text to be displayed when the player interacts with the map. */
+  std::string display_text_;
 
   /** The speed or delay of the game, i.e. a lesser value is faster. */
   size_t speed_;
@@ -243,31 +258,16 @@ private:
   size_t char_counter_;
 
   /**
-   * Determines whether the user changed their direction
-   * after the previous directional command.
-   */
-  bool is_changed_direction_;
-
-  /**
    * The number of directional commands
    * since the direction was last changed changed.
    */
   size_t last_changed_direction_;
 
-  /** The previous direction that the user moved in. */
-  island::Direction prev_direction_;
-
-  /** The text to be displayed when the player interacts with the map. */
-  std::string display_text_;
-
-  /** The location object to offset the rendering by, illusion of a camera. */
-  island::Location camera_;
-
-  /** The handler for the background audio. */
-  cinder::audio::VoiceRef background_audio_;
-
-  /** The handler for the text displaying audio. */
-  cinder::audio::VoiceRef text_audio_;
+  /**
+   * Determines whether the user changed their direction
+   * after the previous directional command.
+   */
+  bool is_changed_direction_;
 };
 
 }  // namespace islandapp

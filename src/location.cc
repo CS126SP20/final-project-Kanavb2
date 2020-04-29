@@ -12,7 +12,11 @@ Location Location::operator+(const Location& rhs) const {
 
 int mod(int a, int b) {
   int c = a % b;
-  return c + (c < 0 ? b : 0);
+
+  if (c < 0) {
+    return c + b;
+  }
+  return c;
 }
 
 Location Location::operator%(const Location& rhs) const {

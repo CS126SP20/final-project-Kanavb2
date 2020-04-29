@@ -84,6 +84,13 @@ FetchContent_Declare(
         GIT_TAG v2.2.2
 )
 
+# JSON library
+FetchContent_Declare(
+        nlohmann_json
+        URL https://github.com/nlohmann/json/releases/download/v3.7.3/include.zip
+)
+
+# Game engine library
 FetchContent_Declare(
         allegro
         GIT_REPOSITORY https://github.com/liballeg/allegro5.git
@@ -104,6 +111,14 @@ if (NOT gflags_POPULATED)
     FetchContent_Populate(gflags)
     add_subdirectory(${gflags_SOURCE_DIR} ${gflags_BINARY_DIR})
 endif ()
+
+# Adds nlohmann_json
+FetchContent_GetProperties(nlohmann_json)
+if (NOT nlohmann_json_POPULATED)
+    FetchContent_Populate(nlohmann_json)
+    add_library(nlohmann_json INTERFACE)
+    target_include_directories(nlohmann_json INTERFACE ${nlohmann_json_SOURCE_DIR}/single_include)
+endif()
 
 # Adds allegro
 FetchContent_GetProperties(allegro)

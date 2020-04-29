@@ -69,14 +69,29 @@ void IslandApp::InitializeAudio() {
 }
 
 void IslandApp::InitializeItems() {
-  island::Item shoe("shoe", "<placeholder>", "assets/shoe.png");
-  engine_.AddInventoryItem(shoe);
-  island::Item sword("sword", "<placeholder>", "assets/sword.png");
-  engine_.AddInventoryItem(sword);
-  island::Item shield("shield", "<placeholder>", "assets/sword.png");
-  engine_.AddInventoryItem(shield);
-  island::Item heart("heart", "<placeholder>", "assets/heart.png");
-  engine_.AddInventoryItem(heart);
+  island::Item shoe("shoe",
+      "Footwear that helps you outspeed others in battle.",
+      "assets/shoe.png");
+  island::Item sword("sword",
+                     "A legendary sword, it is said that it "
+                     "grants the user amazing attack power.",
+                     "assets/sword.png");
+  island::Item shield("shield",
+                      "Armour that increases your defensive prowess,"
+                      " helping you take hits better in battle.",
+                      "assets/shield.png");
+  island::Item heart("heart",
+                     "An extra heart, it will help strengthen "
+                     "your life force in battle.",
+                     "assets/heart.png");
+  island::Item blessing("blessing",
+      "A blessing from g a w d",
+      "assets/blessing.png");
+
+  engine_.AddItem(shoe);
+  engine_.AddItem(sword);
+  engine_.AddItem(shield);
+  engine_.AddItem(heart);
 }
 
 void IslandApp::update() {
@@ -97,15 +112,15 @@ void IslandApp::update() {
     background_audio_->start();
   }
 
-  HandleCameraInteractions();
+  MovePlayerCamera();
 }
 
 void IslandApp::draw() {
   cinder::gl::enableAlphaBlending();
   cinder::gl::clear();
   cinder::gl::color(Color(1,1,1));
-  Translate(false);
 
+  Translate(false);
   DrawMap();
   DrawPlayer();
   if (state_ == GameState::kDisplayingText) {
@@ -113,7 +128,6 @@ void IslandApp::draw() {
   } else if (state_ == GameState::kInventory) {
     DrawInventory();
   }
-
   Translate(true);
 }
 
@@ -204,19 +218,20 @@ void IslandApp::PrintText(const string& text, const C& color,
 
 void IslandApp::DrawItems() const {
   const cinder::vec2 center = getWindowCenter();
+  const double width = getWindowWidth();
+  const double height = getWindowHeight();
 
   for (size_t ite = 0; ite < engine_.GetPlayer().inventory_.size(); ite++) {
     auto item_image = cinder::gl::Texture::create
         (cinder::loadImage
         (engine_.GetInventoryItem(ite).image_file_path_));
 
-    // Magic number for testing, haven't figured out a general formula yet
-    double offset_start = (double) (ite) * 45 + 50;
+    double offset_start = (double) (ite) * 43.0 / 800.0 * width + width / 16.0;
     cinder::gl::draw(item_image,
         Rectf(center.x / kScreenDivider + offset_start,
-              center.y / kScreenDivider + 90,
-              center.x / kScreenDivider + offset_start + 35,
-              center.y / kScreenDivider + 140));
+              center.y / kScreenDivider + height * 90.0 / 800.0,
+              center.x / kScreenDivider + offset_start + width / 20.0,
+              center.y / kScreenDivider + height * 140 / 800.0));
   }
 }
 
@@ -313,7 +328,7 @@ string IslandApp::GetRightDirectionImage() const {
   return "";
 }
 
-void IslandApp::HandleCameraInteractions() {
+void IslandApp::MovePlayerCamera() {
   size_t screen_width = getWindowWidth();
   size_t screen_height = getWindowHeight();
   camera_.SetRow(engine_.GetPlayer().location_.GetRow() -
@@ -440,7 +455,7 @@ void IslandApp::HandlePlayerInteractions() {
   }
 }
 
-string IslandApp::GetDisplayFile(const Tile& tile) const {
+string IslandApp::GetDisplayFile(const Tile& tile) const { // hashmap
   switch (tile) {
     case island::kCold:
       return "assets/cold.txt";
