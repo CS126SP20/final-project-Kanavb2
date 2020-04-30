@@ -39,7 +39,7 @@ IslandApp::IslandApp()
               {10, 4},
               {10, 10, 10, 10},
               std::vector<island::Item>(),
-              0},
+              1200},
       state_{GameState::kPlaying},
       speed_{kSpeed},
       char_counter_{0},
@@ -133,7 +133,7 @@ void IslandApp::draw() {
 
 void IslandApp::DrawPlayer() const {
   Location loc = engine_.GetPlayer().location_;
-  cinder::gl::TextureRef image = GetPlayerDirectionImage();
+  cinder::gl::TextureRef image = GetPlayerImage();
   cinder::gl::draw(image, Rectf( kPlayerTileSize * loc.GetRow(),
                                  kPlayerTileSize * loc.GetCol(),
                                  kPlayerTileSize * (loc.GetRow() + 1),
@@ -166,10 +166,9 @@ void IslandApp::DrawTextBox() {
 
   Translate(true);
   cinder::gl::draw(text_box, Rectf( 0,
-                              (center.y + height *
-                              kTextLocMultiplier) / (kTextLocMultiplier + 1.0),
-                              width,
-                              height));
+                              (center.y + height * kTextLocMultiplier)
+                              / (kTextLocMultiplier + 1.0),
+                              width, height));
   PrintText(to_display, color, size, {width, height});
   Translate(false);
 }
@@ -187,6 +186,7 @@ void IslandApp::DrawInventory() const {
                               (center.x + width) / kScreenDivider,
                               (center.y + height) / kScreenDivider));
   DrawItems();
+  DrawMoney();
   Translate(false);
 }
 
@@ -205,15 +205,10 @@ void IslandApp::PrintText(const string& text, const C& color,
       .backgroundColor(ColorA(0, 0, 0, 0))
       .text(text);
 
-  const auto box_size = box.getSize();
-
   const auto texture = cinder::gl::Texture::create(box.render());
   cinder::gl::draw(texture,
-      Rectf( kTextOffset,
-             (center.y + height * kTextLocMultiplier) /
-                    (kTextLocMultiplier + 1.0) + kTextOffset,
-             width,
-             height));
+      Rectf( kTextOffset,(center.y + height * kTextLocMultiplier) /
+                    (kTextLocMultiplier + 1.0) + kTextOffset, width, height));
 }
 
 void IslandApp::DrawItems() const {
@@ -224,7 +219,7 @@ void IslandApp::DrawItems() const {
   for (size_t ite = 0; ite < engine_.GetPlayer().inventory_.size(); ite++) {
     auto item_image = cinder::gl::Texture::create
         (cinder::loadImage
-        (engine_.GetInventoryItem(ite).image_file_path_));
+        (engine_.GetInventoryItem(ite).file_path_));
 
     double offset_start = (double) (ite) * 43.0 / 800.0 * width + width / 16.0;
     cinder::gl::draw(item_image,
@@ -233,6 +228,30 @@ void IslandApp::DrawItems() const {
               center.x / kScreenDivider + offset_start + width / 20.0,
               center.y / kScreenDivider + height * 140 / 800.0));
   }
+}
+
+void IslandApp::DrawMoney() const {
+  cinder::gl::color(Color::black());
+  const cinder::vec2 center = getWindowCenter();
+  const cinder::ivec2 size = {200, 100};
+  const double width = getWindowWidth();
+  const double height = getWindowHeight();
+
+  auto box = TextBox()
+      .alignment(TextBox::LEFT)
+      .font(cinder::Font(kNormalFont, kFontSize))
+      .size(size)
+      .color(Color::black())
+      .backgroundColor(ColorA(0, 0, 0, 0))
+      .text("$" + std::to_string(engine_.GetPlayer().money_));
+
+  const auto texture = cinder::gl::Texture::create(box.render());
+
+  cinder::gl::draw(texture,
+   Rectf( center.x / kScreenDivider + 50.0 / 800.0 * width,
+          center.y / kScreenDivider + 20.0 / 800.0 * height,
+          center.x / kScreenDivider + 200.0 / 800.0 * width,
+          center.y / kScreenDivider + 120.0 / 800.0 * height));
 }
 
 void IslandApp::Translate(bool is_up) const {
@@ -248,31 +267,27 @@ void IslandApp::Translate(bool is_up) const {
       direction * (camera_.GetCol() * kTranslationMultiplier));
 }
 
-cinder::gl::TextureRef IslandApp::GetPlayerDirectionImage() const {
+cinder::gl::TextureRef IslandApp::GetPlayerImage() const {
   string image_path;
   switch (prev_direction_) {
-    case Direction::kDown: {
-      image_path = GetDownDirectionImage();
+    case Direction::kDown:
+      image_path = GetDownImagePath();
       break;
-    }
-    case Direction::kUp: {
-      image_path = GetUpDirectionImage();
+    case Direction::kUp:
+      image_path = GetUpImagePath();
       break;
-    }
-    case Direction::kLeft: {
-      image_path = GetLeftDirectionImage();
+    case Direction::kLeft:
+      image_path = GetLeftImagePath();
       break;
-    }
-    case Direction::kRight: {
-      image_path = GetRightDirectionImage();
+    case Direction::kRight:
+      image_path = GetRightImagePath();
       break;
-    }
   }
 
   return cinder::gl::Texture::create (cinder::loadImage(image_path));
 }
 
-string IslandApp::GetDownDirectionImage() const {
+string IslandApp::GetDownImagePath() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
       return "assets/down_nomove.png";
@@ -286,7 +301,7 @@ string IslandApp::GetDownDirectionImage() const {
   return "";
 }
 
-string IslandApp::GetUpDirectionImage() const {
+string IslandApp::GetUpImagePath() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
       return "assets/up_nomove.png";
@@ -300,7 +315,7 @@ string IslandApp::GetUpDirectionImage() const {
   return "";
 }
 
-string IslandApp::GetLeftDirectionImage() const {
+string IslandApp::GetLeftImagePath() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
       return "assets/left_nomove.png";
@@ -314,7 +329,7 @@ string IslandApp::GetLeftDirectionImage() const {
   return "";
 }
 
-string IslandApp::GetRightDirectionImage() const {
+string IslandApp::GetRightImagePath() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
       return "assets/right_nomove.png";

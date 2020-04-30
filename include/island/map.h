@@ -46,7 +46,7 @@ public:
    * @param y the y coordinate of the tile the user wants to move to
    * @return whether or not the tile is traversable
    */
-  bool IsTraversableTile(const Location& location) const;
+  bool IsAccessibleTile(const Location& location) const;
 
   /**
    * Gets the tile type at the specified location on the map

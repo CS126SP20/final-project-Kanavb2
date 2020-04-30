@@ -10,13 +10,13 @@ Location Location::operator+(const Location& rhs) const {
   return { row_ + rhs.row_, col_ + rhs.col_ };
 }
 
-int mod(int a, int b) {
-  int c = a % b;
+int mod(int lhs_value, int rhs_value) {
+  int result = lhs_value % rhs_value;
 
-  if (c < 0) {
-    return c + b;
+  if (result < 0) {
+    return result + rhs_value;
   }
-  return c;
+  return result;
 }
 
 Location Location::operator%(const Location& rhs) const {

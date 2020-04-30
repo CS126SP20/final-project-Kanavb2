@@ -41,7 +41,7 @@ class Engine {
   void ExecuteTimeStep();
 
   /** Gets the location delta value from a direction. */
-  Location FromDirection(const Direction& direction) const;
+  Location GetLocationDelta(const Direction& direction) const;
 
   /** Saves the game. */
   void Save();

@@ -84,7 +84,7 @@ Map::Map() {
   }
 }
 
-bool Map::IsTraversableTile(const Location& location) const {
+bool Map::IsAccessibleTile(const Location& location) const {
   return raw_map_[location.GetRow()][location.GetCol()] == kGrass
   || raw_map_[location.GetRow()][location.GetCol()] == kRoad
   || raw_map_[location.GetRow()][location.GetCol()] == kSand

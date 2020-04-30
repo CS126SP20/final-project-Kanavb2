@@ -131,6 +131,11 @@ private:
   void DrawItems() const;
 
   /**
+   * Draws the money the player currently has in the inventory menu
+   */
+  void DrawMoney() const;
+
+  /**
    * Called whenever the user is shown a text box.
    *
    * @tparam C The typename for the color of the text
@@ -162,7 +167,7 @@ private:
    *
    * @return the TextureRef representing the image of the player character
    */
-  cinder::gl::TextureRef GetPlayerDirectionImage() const;
+  cinder::gl::TextureRef GetPlayerImage() const;
 
   /**
    * Gets the direction image path to be displayed for the
@@ -170,7 +175,7 @@ private:
    *
    * @return the string containing the correct image path to be displayed
    */
-  std::string GetDownDirectionImage() const;
+  std::string GetDownImagePath() const;
 
   /**
    * Gets the direction image path to be displayed for the
@@ -178,7 +183,7 @@ private:
    *
    * @return the string containing the correct image path to be displayed
    */
-  std::string GetUpDirectionImage() const;
+  std::string GetUpImagePath() const;
 
   /**
    * Gets the direction image path to be displayed for the
@@ -186,7 +191,7 @@ private:
    *
    * @return the string containing the correct image path to be displayed
    */
-  std::string GetLeftDirectionImage() const;
+  std::string GetLeftImagePath() const;
 
   /**
    * Gets the direction image path to be displayed for the
@@ -194,7 +199,7 @@ private:
    *
    * @return the string containing the correct image path to be displayed
    */
-  std::string GetRightDirectionImage() const;
+  std::string GetRightImagePath() const;
 
   /**
    * Determines what the program should do when one of the

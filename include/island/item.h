@@ -17,10 +17,10 @@ struct Item {
    * @param name the name of the item
    * @param description the description of the item
    */
-  Item(std::string name, std::string description, std::string image_file_path)
+  Item(std::string&& name, std::string&& description, std::string&& file_path)
   : name_(std::move(name)),
     description_(std::move(description)),
-    image_file_path_(std::move(image_file_path)) {}
+    file_path_(std::move(file_path)) {}
 
   /** The name of the item. */
   std::string name_;
@@ -29,7 +29,7 @@ struct Item {
   std::string description_;
 
   /** The file path storing the image of the item. */
-  std::string image_file_path_;
+  std::string file_path_;
 };
 
 }  // namespace island
