@@ -3,17 +3,15 @@
 #ifndef ISLAND_NPC_H_
 #define ISLAND_NPC_H_
 
+#include "character.h"
+
 namespace island {
 /** Represents a non player character in the game. */
-struct Npc {
-  Npc(std::string name, Location location, Statistics statistics)
-        : name_(std::move(name)),
-        location_(location),
-        statistics_(statistics){}
-
-  std::string name_;
-  Location location_;
-  Statistics statistics_;
+struct Npc : Character {
+  /** The constructor for the npc, calls super class constructor. */
+  Npc(const std::string& name, const Location& location,
+      const Statistics& statistics)
+      : Character(name, location, statistics) {}
 };
 
 }  // namespace island

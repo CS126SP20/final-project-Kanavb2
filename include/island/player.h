@@ -5,31 +5,17 @@
 
 #include <utility>
 
-#include "location.h"
-#include "statistics.h"
-#include "item.h"
+#include "character.h"
 
 namespace island {
 /** Represents a player in the game. */
-struct Player {
-  /** Constructor for the player. */
+struct Player : Character {
+  /** Constructor for the player, calls super class constructor. */
   Player(const std::string& name, const Location& location,
-      const Statistics& statistics, std::vector<Item>& inventory,
-      size_t money)
-        : name_(name),
-          location_(location),
-          statistics_(statistics),
+      const Statistics& statistics, std::vector<Item>& inventory, size_t money)
+        : Character(name, location, statistics),
           inventory_(inventory),
           money_(money) {}
-
-  /** The name of the player. */
-  const std::string& name_;
-
-  /** The current location of the player. */
-  Location location_;
-
-  /** The statistics for the player, used in combat. */
-  const Statistics& statistics_;
 
   /** The player's inventory with all of their items. */
   std::vector<Item> inventory_;
