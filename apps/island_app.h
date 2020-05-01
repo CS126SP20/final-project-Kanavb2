@@ -65,9 +65,6 @@ public:
   /** The number of pixels the text is offset from the textbox. */
   const size_t kTextOffset = 10;
 
-  /** Determines how far across the items are displayed in the inventory. */
-  const float kItemLocMultiplier = 2.0;
-
   /** The multiplier for how many pixels the camera translates the view. */
   const double kTranslationMultiplier = 40.0;
 
@@ -104,6 +101,11 @@ private:
    * Initializes all the items that exist in the game.
    */
   void InitializeItems();
+
+  /**
+   * Initializes the file paths used to relay text on the screen.
+   */
+  void InitializeDisplayFilePaths();
 
   /**
    * Draws the player on the map.
@@ -216,13 +218,10 @@ private:
   void HandlePlayerInteractions();
 
   /**
-   * Determines the text to be displayed when the player interacts with the map
-   * by retrieving the file associated with the tile.
-   *
-   * @param tile the tile with which the player interacts
-   * @return the file path storing the text to be displayed
+   * Handles the player's interactions with any npc, be it
+   * talking or initiating a battle.
    */
-  std::string GetDisplayFile(const island::Tile& tile) const;
+  void ExecuteNpcInteraction(const island::Location& location);
 
   /**
    * Retrieves the text from a file.
@@ -252,6 +251,18 @@ private:
 
   /** The location object to offset the rendering by, illusion of a camera. */
   island::Location camera_;
+
+  /**
+   * Stores the paths to the display files for the texts with the
+   * tile as the key and the file path as the corresponding value.
+   */
+  std::unordered_map<island::Tile, std::string> display_text_files_;
+
+  /**
+   * Stores the npc dialogue with the name of the npc as the key and
+   * the file path as the corresponding value.
+   */
+  std::unordered_map<std::string, std::string> npc_text_files_;
 
   /** The text to be displayed when the player interacts with the map. */
   std::string display_text_;

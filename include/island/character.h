@@ -19,7 +19,6 @@ struct Character {
           location_(location),
           statistics_(statistics) {}
 
-protected:
   /** The name of the character. */
   const std::string& name_;
 

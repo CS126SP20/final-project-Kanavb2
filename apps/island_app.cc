@@ -52,6 +52,7 @@ IslandApp::IslandApp()
 void IslandApp::setup() {
   InitializeAudio();
   InitializeItems();
+  InitializeDisplayFilePaths();
 
   cinder::gl::disableDepthRead();
   cinder::gl::disableDepthWrite();
@@ -92,6 +93,27 @@ void IslandApp::InitializeItems() {
   engine_.AddItem(sword);
   engine_.AddItem(shield);
   engine_.AddItem(heart);
+}
+
+void IslandApp::InitializeDisplayFilePaths() {
+  display_text_files_.insert(std::pair<Tile, string>
+      (Tile::kCold, "assets/text/cold.txt"));
+  display_text_files_.insert(std::pair<Tile, string>
+      (Tile::kFarm, "assets/text/farm.txt"));
+  display_text_files_.insert(std::pair<Tile, string>
+      (Tile::kWater, "assets/text/water.txt"));
+  display_text_files_.insert(std::pair<Tile, string>
+      (Tile::kPuddle, "assets/text/puddle.txt"));
+  display_text_files_.insert(std::pair<Tile, string>
+      (Tile::kTree, "assets/text/flora.txt"));
+  display_text_files_.insert(std::pair<Tile, string>
+      (Tile::kNotice, "assets/text/notice.txt"));
+  display_text_files_.insert(std::pair<Tile, string>
+      (Tile::kMailBox, "assets/text/mail_box.txt"));
+  display_text_files_.insert(std::pair<Tile, string>
+      (Tile::kClosedDoor, "assets/text/closed_door.txt"));
+  display_text_files_.insert(std::pair<Tile, string>
+      (Tile::kExtreme, "assets/text/extreme.txt"));
 }
 
 void IslandApp::update() {
@@ -290,13 +312,13 @@ cinder::gl::TextureRef IslandApp::GetPlayerImage() const {
 string IslandApp::GetDownImagePath() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
-      return "assets/down_nomove.png";
+      return "assets/player/down_nomove.png";
     case 1 :
-      return "assets/down_left.png";
+      return "assets/player/down_left.png";
     case 2 :
-      return "assets/down_nomove.png";
+      return "assets/player/down_nomove.png";
     case 3 :
-      return "assets/down_right.png";
+      return "assets/player/down_right.png";
   }
   return "";
 }
@@ -304,13 +326,13 @@ string IslandApp::GetDownImagePath() const {
 string IslandApp::GetUpImagePath() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
-      return "assets/up_nomove.png";
+      return "assets/player/up_nomove.png";
     case 1 :
-      return "assets/up_left.png";
+      return "assets/player/up_left.png";
     case 2 :
-      return "assets/up_nomove.png";
+      return "assets/player/up_nomove.png";
     case 3 :
-      return "assets/up_right.png";
+      return "assets/player/up_right.png";
   }
   return "";
 }
@@ -318,13 +340,13 @@ string IslandApp::GetUpImagePath() const {
 string IslandApp::GetLeftImagePath() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
-      return "assets/left_nomove.png";
+      return "assets/player/left_nomove.png";
     case 1 :
-      return "assets/left_left.png";
+      return "assets/player/left_left.png";
     case 2 :
-      return "assets/left_nomove.png";
+      return "assets/player/left_nomove.png";
     case 3 :
-      return "assets/left_right.png";
+      return "assets/player/left_right.png";
   }
   return "";
 }
@@ -332,13 +354,13 @@ string IslandApp::GetLeftImagePath() const {
 string IslandApp::GetRightImagePath() const {
   switch (last_changed_direction_ % kNumSprites) {
     case 0 :
-      return "assets/right_nomove.png";
+      return "assets/player/right_nomove.png";
     case 1 :
-      return "assets/right_left.png";
+      return "assets/player/right_left.png";
     case 2 :
-      return "assets/right_nomove.png";
+      return "assets/player/right_nomove.png";
     case 3 :
-      return "assets/right_right.png";
+      return "assets/player/right_right.png";
   }
   return "";
 }
@@ -460,41 +482,23 @@ void IslandApp::HandlePlayerInteractions() {
     Tile facing_tile = engine_.GetTileType(facing_location);
     string file_path;
 
-    state_ = GameState::kDisplayingText;
-    file_path = GetDisplayFile(facing_tile);
-    if (file_path.empty()) {
-      state_ = GameState::kPlaying;
+    if (facing_tile == island::kNpc) {
+      ExecuteNpcInteraction(facing_location);
       return;
     }
-    display_text_ = GetTextFromFile(file_path);
+
+    state_ = GameState::kDisplayingText;
+    if (display_text_files_.count(facing_tile)) {
+      file_path = display_text_files_.at(facing_tile);
+      display_text_ = GetTextFromFile(file_path);
+    } else {
+      state_ = GameState::kPlaying;
+    }
   }
 }
 
-string IslandApp::GetDisplayFile(const Tile& tile) const { // hashmap
-  switch (tile) {
-    case island::kCold:
-      return "assets/cold.txt";
-    case island::kFarm:
-      return "assets/farm.txt";
-    case island::kWater:
-      return "assets/water.txt";
-    case island::kPuddle:
-      return "assets/puddle.txt";
-    case island::kTree:
-      return "assets/flora.txt";
-    case island::kNotice:
-      return "assets/notice.txt";
-    case island::kMailBox:
-      return "assets/mail_box.txt";
-    case island::kClosedDoor:
-      return "assets/closed_door.txt";
-    case island::kExtreme:
-      return "assets/extreme.txt";
-    case island::kNpc:
-      break;
-    default: return "";
-  }
-  return "";
+void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
+  
 }
 
 std::string IslandApp::GetTextFromFile(const std::string& file_path) const {

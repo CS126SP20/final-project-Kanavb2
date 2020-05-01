@@ -5,6 +5,7 @@
 
 #include <island/location.h>
 
+#include <unordered_map>
 #include <vector>
 
 namespace island {
@@ -39,6 +40,8 @@ public:
   /** Constructor which initializes the map with tile values. */
   Map();
 
+  void InitializeMapTiles();
+
   /**
    * Determines whether the player can move onto a particular tile on the map.
    *
@@ -57,6 +60,13 @@ public:
   Tile GetTile(const Location& location) const;
 
 private:
+  /**
+   * Stores the tile values to be read from the file, with the character
+   * representing a tile in the file as the key, and the tile itself as the
+   * value.
+   */
+  std::unordered_map<char, Tile> letter_tiles_;
+
   /** Stores all the tile values for the map. */
   std::vector<std::vector<Tile>> raw_map_;
 };
