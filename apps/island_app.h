@@ -59,11 +59,14 @@ public:
   /** The speed at which characters are displayed in the text box. */
   const size_t kCharSpeed = 1;
 
-  /** Determines how far down the text box is placed, higher is further down. */
-  const double kTextLocMultiplier = 2.0;
-
   /** The number of pixels the text is offset from the textbox. */
   const size_t kTextOffset = 10;
+
+  /** The maximum number of items the player can hold. */
+  const size_t kMaxInventorySize = 5;
+
+  /** Determines how far down the text box is placed, higher is further down. */
+  const double kTextLocMultiplier = 2.0;
 
   /** The multiplier for how many pixels the camera translates the view. */
   const double kTranslationMultiplier = 40.0;
@@ -133,9 +136,14 @@ private:
   void DrawItems() const;
 
   /**
-   * Draws the money the player currently has in the inventory menu
+   * Draws the money the player currently has in the inventory menu.
    */
   void DrawMoney() const;
+
+  /**
+   * Draws the description of the inventory of the player.
+   */
+  void DrawInventoryDescription() const;
 
   /**
    * Called whenever the user is shown a text box.

@@ -34,8 +34,9 @@ void Map::InitializeMapTiles() {
   letter_tiles_.insert(std::pair<char, Tile>('b', kBarrier));
   letter_tiles_.insert(std::pair<char, Tile>('h', kHouse));
   letter_tiles_.insert(std::pair<char, Tile>('o', kOpenDoor));
-  letter_tiles_.insert(std::pair<char, Tile>('k', kClosedDoor));
+  letter_tiles_.insert(std::pair<char, Tile>('l', kClosedDoor));
   letter_tiles_.insert(std::pair<char, Tile>('e', kExtreme));
+  letter_tiles_.insert(std::pair<char, Tile>('k', kKey));
   letter_tiles_.insert(std::pair<char, Tile>('q', kNpc));
 }
 

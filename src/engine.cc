@@ -16,7 +16,20 @@ Engine::Engine(size_t width, size_t height, std::vector<Item> items,
         width_{width},
         height_{height},
         items_{std::move(items)},
-        direction_{Direction::kRight} {}
+        direction_{Direction::kRight} {
+  InitializeNpcs();
+}
+
+void Engine::InitializeNpcs() {
+  npcs_.push_back(Npc("Rosalyn", {15, 2}, Statistics(10,10,10,10), false));
+  npcs_.push_back(Npc("John", {20, 1}, Statistics(10,10,10,10), false));
+  npcs_.push_back(Npc("Azura", {16, 48}, Statistics(10,10,10,10), false));
+  npcs_.push_back(Npc("Klutz", {28, 20}, Statistics(10,10,10,10), false));
+  npcs_.push_back(Npc("Rod", {38, 10}, Statistics(10,10,10,10), false));
+
+  npcs_.push_back(Npc("Sven", {25, 20}, Statistics(7,7,7,7), true));
+  npcs_.push_back(Npc("Elf", {26, 20}, Statistics(11,11,11,11), true));
+}
 
 Location Engine::GetLocationDelta(const Direction& direction) const {
   switch (direction) {

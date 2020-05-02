@@ -6,6 +6,7 @@
 #include "direction.h"
 #include "player.h"
 #include "map.h"
+#include "npc.h"
 
 #include <cstddef>
 #include <string>
@@ -36,6 +37,8 @@ class Engine {
          const Location& player_loc,
          const Statistics& player_stats,
          std::vector<Item> player_inventory, size_t player_money);
+
+  void InitializeNpcs();
 
   /** Executes a time step, moves the player character. */
   void ExecuteTimeStep();
@@ -130,11 +133,22 @@ class Engine {
   /** The object representing the player character. */
   Player player_;
 
+  /** Map of the game. */
+  Map map_;
+
   /** The list of all items in the game. */
   std::vector<Item> items_;
 
-  /** Map of the game. */
-  Map map_;
+  /**
+   * The list of all the non player characters in the game.
+   */
+  std::vector<Npc> npcs_;
+
+  /**
+   * The list of all the non player characters in the game, mapped from the
+   * name of the npc to the location where they are on the map.
+   */
+  std::unordered_map<std::string, Location> npc_locations_;
 };
 
 }  // namespace island

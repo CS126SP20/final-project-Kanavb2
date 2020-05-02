@@ -4,6 +4,7 @@
 #define ISLAND_STATISTICS_H_
 
 namespace island {
+
 /** Manages the statistics of a character in the game. */
 struct Statistics {
   /** The constructor for the Statistics of a character. */

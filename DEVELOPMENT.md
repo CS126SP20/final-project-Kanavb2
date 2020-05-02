@@ -44,8 +44,14 @@
 ### 4/28/20
 * Added an inventory to manage items and money
 
+### 4/30/20
+* Refactored long switch cases into HashMaps in islandapp.cc and map.cc
+* Made inventory more descriptive, added a money display
+
+### 5/2/20
+* Added npc placeholders throughout the map
+
 ### To do:
 * Add npc sprites
-* Add npcs throughout the map
 * Add a save state
 * Figure out combat system

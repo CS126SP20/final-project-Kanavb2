@@ -8,6 +8,7 @@
 #include "character.h"
 
 namespace island {
+
 /** Represents a player in the game. */
 struct Player : Character {
   /** Constructor for the player, calls super class constructor. */

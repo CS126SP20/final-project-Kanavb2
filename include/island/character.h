@@ -10,6 +10,7 @@
 #include "item.h"
 
 namespace island {
+
 /** Represents a character in the game. */
 struct Character {
   /** The constructor for the character. */

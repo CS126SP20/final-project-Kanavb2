@@ -31,6 +31,7 @@ enum Tile {
   kClosedDoor,
   kInvalid,
   kExtreme,
+  kKey,
   kNpc
 };
 

@@ -209,6 +209,7 @@ void IslandApp::DrawInventory() const {
                               (center.y + height) / kScreenDivider));
   DrawItems();
   DrawMoney();
+  DrawInventoryDescription();
   Translate(false);
 }
 
@@ -255,7 +256,7 @@ void IslandApp::DrawItems() const {
 void IslandApp::DrawMoney() const {
   cinder::gl::color(Color::black());
   const cinder::vec2 center = getWindowCenter();
-  const cinder::ivec2 size = {200, 100};
+  const cinder::ivec2 size = {150, 100};
   const double width = getWindowWidth();
   const double height = getWindowHeight();
 
@@ -274,6 +275,42 @@ void IslandApp::DrawMoney() const {
           center.y / kScreenDivider + 20.0 / 800.0 * height,
           center.x / kScreenDivider + 200.0 / 800.0 * width,
           center.y / kScreenDivider + 120.0 / 800.0 * height));
+}
+
+void IslandApp::DrawInventoryDescription() const {
+  cinder::gl::color(Color::black());
+  const cinder::vec2 center = getWindowCenter();
+  const cinder::ivec2 size = {350, 130};
+  const double width = getWindowWidth();
+  const double height = getWindowHeight();
+  string text;
+  size_t inventory_size = engine_.GetPlayer().inventory_.size();
+
+  if (inventory_size == 0) {
+    text = "You have no items! You should try and search around, "
+           "or perhaps even buy some.";
+  } else if (inventory_size == kMaxInventorySize) {
+    text = "You have all the items. I believed in you from the very beginning!";
+  } else {
+    text = "These items of yours sure are impressive, "
+           "but there's still a few more you can get!";
+  }
+
+  auto box = TextBox()
+      .alignment(TextBox::LEFT)
+      .font(cinder::Font(kNormalFont, 2 * kFontSize / 3))
+      .size(size)
+      .color(Color::black())
+      .backgroundColor(ColorA(0, 0, 0, 0))
+      .text(text);
+
+  const auto texture = cinder::gl::Texture::create(box.render());
+
+  cinder::gl::draw(texture,
+     Rectf( center.x / kScreenDivider + 50.0 / 800.0 * width,
+            center.y / kScreenDivider + 320.0 / 800.0 * height,
+            center.x / kScreenDivider + 400.0 / 800.0 * width,
+            center.y / kScreenDivider + 450.0 / 800.0 * height));
 }
 
 void IslandApp::Translate(bool is_up) const {
@@ -498,7 +535,7 @@ void IslandApp::HandlePlayerInteractions() {
 }
 
 void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
-  
+
 }
 
 std::string IslandApp::GetTextFromFile(const std::string& file_path) const {
