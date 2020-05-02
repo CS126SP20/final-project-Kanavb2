@@ -38,6 +38,7 @@ class Engine {
          const Statistics& player_stats,
          std::vector<Item> player_inventory, size_t player_money);
 
+  /** Initializes the Npcs throughout the map. */
   void InitializeNpcs();
 
   /** Executes a time step, moves the player character. */
@@ -51,6 +52,13 @@ class Engine {
 
   /** Determines whether the direction the player wants to move in is valid. */
   bool IsValidDirection(const Direction& direction) const;
+
+  /**
+   * Gets the npc that is at the location specified on the map.
+   *
+   * @param location the location at which the npc is
+   */
+  Npc GetNpcAtLocation(const Location& location) const;
 
   /**
    * Gets the location the player is facing
@@ -97,9 +105,9 @@ class Engine {
   /**
    * Removes the specified item from the list of items in the game.
    *
-   * @param item the item to be removed
+   * @param item_name the name of the item to be removed
    */
-  void RemoveItem(const Item& item);
+  void RemoveItem(const std::string& item_name);
 
   /**
    * Accessor function for an item in the player's inventory.
@@ -112,6 +120,14 @@ class Engine {
   }
 
   /**
+   * Accessor function for any item in the game.
+   *
+   * @param item_name the name of the item to be retrieved
+   * @return the item to be retrieved
+   */
+  Item GetItem(const std::string& item_name) const;
+
+  /**
    * Accessor function for the player in the game.
    *
    * @return the player in the game engine
@@ -119,6 +135,15 @@ class Engine {
   inline Player GetPlayer() const {
     return player_;
   }
+
+  /**
+   * Sets the tile at a particular location to a new Tile value
+   * Wrapper function for Map's SetTile
+   *
+   * @param location the location where the value of the tile is to be changed
+   * @param tile the new value of the tile
+   */
+  void SetTile(const Location& location, const Tile& tile);
 
  private:
   /** The width of the island map. */

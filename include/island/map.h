@@ -27,8 +27,7 @@ enum Tile {
   kMailBox,
   kBarrier,
   kHouse,
-  kOpenDoor,
-  kClosedDoor,
+  kDoor,
   kInvalid,
   kExtreme,
   kKey,
@@ -60,7 +59,15 @@ public:
    */
   Tile GetTile(const Location& location) const;
 
-private:
+  /**
+   * Sets the tile at a particular location to a new Tile value
+   *
+   * @param location the location where the value of the tile is to be changed
+   * @param tile the new value of the tile
+   */
+  void SetTile(const Location& location, const Tile& tile);
+
+ private:
   /**
    * Stores the tile values to be read from the file, with the character
    * representing a tile in the file as the key, and the tile itself as the

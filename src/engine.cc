@@ -23,9 +23,9 @@ Engine::Engine(size_t width, size_t height, std::vector<Item> items,
 void Engine::InitializeNpcs() {
   npcs_.push_back(Npc("Rosalyn", {15, 2}, Statistics(10,10,10,10), false));
   npcs_.push_back(Npc("John", {20, 1}, Statistics(10,10,10,10), false));
-  npcs_.push_back(Npc("Azura", {16, 48}, Statistics(10,10,10,10), false));
+  npcs_.push_back(Npc("Rod", {16, 48}, Statistics(10,10,10,10), false));
   npcs_.push_back(Npc("Klutz", {28, 20}, Statistics(10,10,10,10), false));
-  npcs_.push_back(Npc("Rod", {38, 10}, Statistics(10,10,10,10), false));
+  npcs_.push_back(Npc("Azura", {38, 10}, Statistics(10,10,10,10), false));
 
   npcs_.push_back(Npc("Sven", {25, 20}, Statistics(7,7,7,7), true));
   npcs_.push_back(Npc("Elf", {26, 20}, Statistics(11,11,11,11), true));
@@ -64,6 +64,16 @@ bool Engine::IsValidDirection(const Direction &direction) const {
   return map_.IsAccessibleTile(new_loc);
 }
 
+
+Npc Engine::GetNpcAtLocation(const Location &location) const {
+  for (const auto& npc : npcs_) {
+    if (npc.location_.GetRow() == location.GetRow() &&
+        npc.location_.GetCol() == location.GetCol()) {
+      return npc;
+    }
+  }
+}
+
 Location Engine::GetFacingLocation(const Direction& direction) const {
   Location direction_loc = GetLocationDelta(direction);
   return (player_.location_ + direction_loc) % Location(height_, width_);
@@ -90,13 +100,25 @@ void Engine::AddItem(const Item& item) {
   items_.push_back(item);
 }
 
-void Engine::RemoveItem(const Item &item) {
+void Engine::RemoveItem(const std::string& item_name) {
   for (size_t index = 0; index < items_.size(); index++) {
-    if (items_[index].name_ == item.name_) {
+    if (items_[index].name_ == item_name) {
       items_.erase(items_.begin() + index);
-      break;
+      return;
     }
   }
+}
+
+Item Engine::GetItem(const std::string& item_name) const {
+  for (auto& item : items_) {
+    if (item.name_ == item_name) {
+      return item;
+    }
+  }
+}
+
+void Engine::SetTile(const Location& location, const Tile& tile) {
+  map_.SetTile(location, tile);
 }
 
 }  // namespace island

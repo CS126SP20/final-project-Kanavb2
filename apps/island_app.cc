@@ -28,6 +28,7 @@ using cinder::app::KeyEvent;
 using island::Direction;
 using island::Location;
 using island::Tile;
+using island::Npc;
 using std::chrono::seconds;
 using std::chrono::system_clock;
 using std::string;
@@ -53,6 +54,7 @@ void IslandApp::setup() {
   InitializeAudio();
   InitializeItems();
   InitializeDisplayFilePaths();
+  InitializeNpcTextFilePaths();
 
   cinder::gl::disableDepthRead();
   cinder::gl::disableDepthWrite();
@@ -86,13 +88,17 @@ void IslandApp::InitializeItems() {
                      "your life force in battle.",
                      "assets/heart.png");
   island::Item blessing("blessing",
-      "A blessing from g a w d",
-      "assets/blessing.png");
+                      "A blessing from g a w d",
+                      "assets/blessing.png");
+  island::Item key("key",
+                      "Looks like a key to someone's house",
+                      "assets/key.png");
 
   engine_.AddItem(shoe);
   engine_.AddItem(sword);
   engine_.AddItem(shield);
   engine_.AddItem(heart);
+  engine_.AddItem(key);
 }
 
 void IslandApp::InitializeDisplayFilePaths() {
@@ -111,9 +117,28 @@ void IslandApp::InitializeDisplayFilePaths() {
   display_text_files_.insert(std::pair<Tile, string>
       (Tile::kMailBox, "assets/text/mail_box.txt"));
   display_text_files_.insert(std::pair<Tile, string>
-      (Tile::kClosedDoor, "assets/text/closed_door.txt"));
+      (Tile::kDoor, "assets/text/closed_door.txt"));
   display_text_files_.insert(std::pair<Tile, string>
       (Tile::kExtreme, "assets/text/extreme.txt"));
+  display_text_files_.insert(std::pair<Tile, string>
+      (Tile::kKey, "assets/text/key.txt"));
+}
+
+void IslandApp::InitializeNpcTextFilePaths() {
+  npc_text_files_.insert(std::pair<string, string>
+       ("Rosalyn", "assets/npc/dialogue/rosalyn.txt"));
+  npc_text_files_.insert(std::pair<string, string>
+       ("John", "assets/npc/dialogue/john.txt"));
+  npc_text_files_.insert(std::pair<string, string>
+       ("Azura", "assets/npc/dialogue/azura.txt"));
+  npc_text_files_.insert(std::pair<string, string>
+       ("Klutz", "assets/npc/dialogue/klutz.txt"));
+  npc_text_files_.insert(std::pair<string, string>
+       ("Rod", "assets/npc/dialogue/rod.txt"));
+  npc_text_files_.insert(std::pair<string, string>
+       ("Sven", "assets/npc/dialogue/sven.txt"));
+  npc_text_files_.insert(std::pair<string, string>
+       ("Elf", "assets/npc/dialogue/elf.txt"));
 }
 
 void IslandApp::update() {
@@ -298,7 +323,7 @@ void IslandApp::DrawInventoryDescription() const {
 
   auto box = TextBox()
       .alignment(TextBox::LEFT)
-      .font(cinder::Font(kNormalFont, 2 * kFontSize / 3))
+      .font(cinder::Font(kNormalFont, 2.0 * kFontSize / 3))
       .size(size)
       .color(Color::black())
       .backgroundColor(ColorA(0, 0, 0, 0))
@@ -474,7 +499,7 @@ void IslandApp::keyDown(KeyEvent event) {
         char_counter_ = 0;
       }
 
-      HandlePlayerInteractions();
+      ExecutePlayerInteractions();
       break;
     }
 
@@ -511,7 +536,7 @@ void IslandApp::HandleMovement(const Direction& direction) {
   engine_.SetDirection(direction);
 }
 
-void IslandApp::HandlePlayerInteractions() {
+void IslandApp::ExecutePlayerInteractions() {
   if (state_ == GameState::kDisplayingText) {
     state_ = GameState::kPlaying;
   } else if (state_ == GameState::kPlaying){
@@ -526,6 +551,12 @@ void IslandApp::HandlePlayerInteractions() {
 
     state_ = GameState::kDisplayingText;
     if (display_text_files_.count(facing_tile)) {
+      if (facing_tile == Tile::kKey) {
+        engine_.AddInventoryItem(engine_.GetItem("key"));
+        engine_.RemoveItem("key");
+        engine_.SetTile(facing_location, Tile::kTree);
+      }
+
       file_path = display_text_files_.at(facing_tile);
       display_text_ = GetTextFromFile(file_path);
     } else {
@@ -535,7 +566,20 @@ void IslandApp::HandlePlayerInteractions() {
 }
 
 void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
+  Npc npc = engine_.GetNpcAtLocation(location);
 
+  display_text_ = GetTextFromFile(npc_text_files_.at(npc.name_));
+  if (state_ == GameState::kDisplayingText) {
+    state_ = GameState::kPlaying;
+  } else {
+    state_ = GameState::kDisplayingText;
+  }
+
+/*  if (npc.is_combatable_) {
+    return;
+  } else {
+
+  }*/
 }
 
 std::string IslandApp::GetTextFromFile(const std::string& file_path) const {

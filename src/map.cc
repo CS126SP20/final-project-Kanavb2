@@ -33,8 +33,7 @@ void Map::InitializeMapTiles() {
   letter_tiles_.insert(std::pair<char, Tile>('m', kMailBox));
   letter_tiles_.insert(std::pair<char, Tile>('b', kBarrier));
   letter_tiles_.insert(std::pair<char, Tile>('h', kHouse));
-  letter_tiles_.insert(std::pair<char, Tile>('o', kOpenDoor));
-  letter_tiles_.insert(std::pair<char, Tile>('l', kClosedDoor));
+  letter_tiles_.insert(std::pair<char, Tile>('l', kDoor));
   letter_tiles_.insert(std::pair<char, Tile>('e', kExtreme));
   letter_tiles_.insert(std::pair<char, Tile>('k', kKey));
   letter_tiles_.insert(std::pair<char, Tile>('q', kNpc));
@@ -49,6 +48,10 @@ bool Map::IsAccessibleTile(const Location& location) const {
 
 Tile Map::GetTile(const Location& location) const {
   return raw_map_[location.GetRow()][location.GetCol()];
+}
+
+void Map::SetTile(const Location& location, const Tile& tile) {
+  raw_map_[location.GetRow()][location.GetCol()] = tile;
 }
 
 }  // namespace island

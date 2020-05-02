@@ -111,6 +111,11 @@ private:
   void InitializeDisplayFilePaths();
 
   /**
+   * Initializes the npc file paths used to relay the npcs' dialogue.
+   */
+   void InitializeNpcTextFilePaths();
+
+  /**
    * Draws the player on the map.
    */
   void DrawPlayer() const;
@@ -223,7 +228,7 @@ private:
    * Handles the player's interactions with the map, displays text on the
    * screen accordingly.
    */
-  void HandlePlayerInteractions();
+  void ExecutePlayerInteractions();
 
   /**
    * Handles the player's interactions with any npc, be it
