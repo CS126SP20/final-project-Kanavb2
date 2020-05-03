@@ -124,20 +124,11 @@ void IslandApp::InitializeDisplayFilePaths() {
 }
 
 void IslandApp::InitializeNpcTextFilePaths() {
-  npc_text_files_.insert(std::pair<string, string>
-       ("Rosalyn", "assets/npc/dialogue/Rosalyn.txt"));
-  npc_text_files_.insert(std::pair<string, string>
-       ("John", "assets/npc/dialogue/John.txt"));
-  npc_text_files_.insert(std::pair<string, string>
-       ("Azura", "assets/npc/dialogue/Azura.txt"));
-  npc_text_files_.insert(std::pair<string, string>
-       ("Klutz", "assets/npc/dialogue/Klutz.txt"));
-  npc_text_files_.insert(std::pair<string, string>
-       ("Rod", "assets/npc/dialogue/Rod.txt"));
-  npc_text_files_.insert(std::pair<string, string>
-       ("Sven", "assets/npc/dialogue/Sven.txt"));
-  npc_text_files_.insert(std::pair<string, string>
-       ("Elf", "assets/npc/dialogue/Elf.txt"));
+  for (const auto& npc : engine_.GetNpcs()) {
+    npc_text_files_.insert(std::pair<string, string>
+       (npc.name_, "assets/npc/dialogue/" + npc.name_ + ".txt"));
+  }
+  ChangeMarketDialogue();
 }
 
 void IslandApp::InitializeNpcSpriteFilePaths() {
@@ -172,6 +163,8 @@ void IslandApp::InitializeActiveNpcSpriteFiles() {
       ("Sven", Direction::kUp));
   active_npc_sprite_files_.insert(std::pair<string, Direction>
       ("Elf", Direction::kUp));
+  active_npc_sprite_files_.insert(std::pair<string, Direction>
+      ("Boi", Direction::kUp));
 }
 
 void IslandApp::update() {
@@ -204,7 +197,7 @@ void IslandApp::draw() {
   DrawMap();
   DrawPlayer();
   DrawNpcs();
-  if (state_ == GameState::kDisplayingText) {
+  if (state_ == GameState::kDisplayingText || state_ == GameState::kMarket) {
     DrawTextBox();
   } else if (state_ == GameState::kInventory) {
     DrawInventory();
@@ -561,7 +554,7 @@ void IslandApp::keyDown(KeyEvent event) {
     }
 
     case KeyEvent::KEY_z: {
-      if (state_ == GameState::kDisplayingText
+      if ((state_ == GameState::kDisplayingText || state_ == GameState::kMarket)
         && char_counter_ != display_text_.size()) {
         char_counter_ = display_text_.size();
         return;
@@ -569,7 +562,7 @@ void IslandApp::keyDown(KeyEvent event) {
         char_counter_ = 0;
       }
 
-      ExecutePlayerInteractions();
+      ExecutePlayerInteractions(event);
       break;
     }
 
@@ -583,6 +576,10 @@ void IslandApp::keyDown(KeyEvent event) {
       }
       break;
     }
+
+    case KeyEvent::KEY_y:
+      ExecuteMarketInteraction(event);
+      break;
   }
 }
 
@@ -606,13 +603,19 @@ void IslandApp::HandleMovement(const Direction& direction) {
   engine_.SetDirection(direction);
 }
 
-void IslandApp::ExecutePlayerInteractions() {
+void IslandApp::ExecutePlayerInteractions(const KeyEvent& key_event) {
   if (state_ == GameState::kDisplayingText) {
     state_ = GameState::kPlaying;
-  } else if (state_ == GameState::kPlaying){
+  } else if (state_ == GameState::kPlaying || state_ == GameState::kMarket){
     Location facing_location = engine_.GetFacingLocation(prev_direction_);
     Tile facing_tile = engine_.GetTileType(facing_location);
     string file_path;
+
+    if (facing_location.GetRow() == kMarketLocation.GetRow()
+      && facing_location.GetCol() == kMarketLocation.GetCol()) {
+      ExecuteMarketInteraction(key_event);
+      return;
+    }
 
     if (facing_tile == island::kNpc) {
       ExecuteNpcInteraction(facing_location);
@@ -636,6 +639,56 @@ void IslandApp::ExecutePlayerInteractions() {
   }
 }
 
+void IslandApp::ExecuteMarketInteraction(const KeyEvent& key_event) {
+  if (npc_text_files_["Boi"] == "assets/npc/dialogue/Boi_no_items.txt") {
+    return;
+  }
+  Npc npc = engine_.GetNpcAtLocation(kMarketLocation);
+  UpdateActiveNpcSprites(npc);
+
+  display_text_ = GetTextFromFile(npc_text_files_["Boi"]);
+  if(key_event.getCode() == KeyEvent::KEY_y) {
+    BuyItem(0);
+  } else {
+    if (state_ == GameState::kMarket) {
+      state_ = GameState::kPlaying;
+      return;
+    } else {
+      state_ = GameState::kMarket;
+    }
+  }
+}
+
+void IslandApp::BuyItem(size_t item_index) {
+  bool has_enough_money = engine_.GetPlayer().money_ >= kItemPrice;
+  if (has_enough_money && engine_.GetNumItems() > item_index) {
+    ChangeMarketDialogue();
+    engine_.AddInventoryItem(engine_.GetItemFromIndex(item_index));
+    engine_.RemoveItem(engine_.GetItemFromIndex(item_index).name_);
+    engine_.RemoveMoney(kItemPrice);
+    state_ = GameState::kPlaying;
+  } else {
+    display_text_ = GetTextFromFile
+        ("assets/npc/dialogue/Boi_no_money.txt");
+  }
+}
+
+void IslandApp::ChangeMarketDialogue() {
+  string dialogue = npc_text_files_["Boi"];
+  if (dialogue == "assets/npc/dialogue/Boi.txt") {
+    dialogue = "assets/npc/dialogue/Boi_shoes.txt";
+  } else if (dialogue == "assets/npc/dialogue/Boi_shoes.txt") {
+    dialogue = "assets/npc/dialogue/Boi_sword.txt";
+  } else if (dialogue == "assets/npc/dialogue/Boi_sword.txt") {
+    dialogue = "assets/npc/dialogue/Boi_shield.txt";
+  } else if (dialogue == "assets/npc/dialogue/Boi_shield.txt") {
+    dialogue = "assets/npc/dialogue/Boi_heart.txt";
+  } else if (dialogue == "assets/npc/dialogue/Boi_heart.txt") {
+    dialogue = "assets/npc/dialogue/Boi_no_items.txt";
+  }
+  npc_text_files_["Boi"] = dialogue;
+}
+
 void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
   Npc npc = engine_.GetNpcAtLocation(location);
 
@@ -645,6 +698,7 @@ void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
 
   UpdateActiveNpcSprites(npc);
   display_text_ = GetTextFromFile(npc_text_files_[npc.name_]);
+
   if (state_ == GameState::kDisplayingText) {
     state_ = GameState::kPlaying;
   } else {
@@ -677,10 +731,10 @@ void IslandApp::UpdateActiveNpcSprites(const Npc& npc) {
   active_npc_sprite_files_[npc.name_] = facing_direction;
 }
 
-std::string IslandApp::GetTextFromFile(std::string& file_path) {
+std::string IslandApp::GetTextFromFile(const string& file_path) {
   if (engine_.GetKey() && file_path == "assets/npc/dialogue/Klutz.txt") {
     engine_.SetKey(false);
-    engine_.AddMoney(8800);
+    engine_.AddMoney(kKeyMoney);
     engine_.RemoveInventoryItem("key");
     npc_text_files_["Klutz"] = "assets/npc/dialogue/Klutz_during_key.txt";
   }

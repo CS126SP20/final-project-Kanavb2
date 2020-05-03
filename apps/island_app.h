@@ -23,7 +23,8 @@ enum class GameState {
   kPlaying,
   kPaused,
   kDisplayingText,
-  kInventory
+  kInventory,
+  kMarket
 };
 
 /** The class that interacts with cinder to run the game. */
@@ -65,11 +66,20 @@ public:
   /** The maximum number of items the player can hold. */
   const size_t kMaxInventorySize = 5;
 
+  /** The price of an item on the market. */
+  const size_t kItemPrice = 5000;
+
+  /** The reward of money one gets for completing the key quest. */
+  const size_t kKeyMoney = 8800;
+
   /** Determines how far down the text box is placed, higher is further down. */
   const double kTextLocMultiplier = 2.0;
 
   /** The multiplier for how many pixels the camera translates the view. */
   const double kTranslationMultiplier = 40.0;
+
+  /** The location on the map where the market is. */
+  const island::Location kMarketLocation = {36, 36};
 
   /** The constructor for the game. */
   IslandApp();
@@ -261,8 +271,30 @@ private:
   /**
    * Handles the player's interactions with the map, displays text on the
    * screen accordingly.
+   *
+   * @param key_event The key last pressed on the keyboard
    */
-  void ExecutePlayerInteractions();
+  void ExecutePlayerInteractions(const cinder::app::KeyEvent& key_event);
+
+  /**
+   * Handles the player's interactions with the market, where the player
+   * can but items depending on their money.
+   *
+   * @param key_event The key last pressed on the keyboard
+   */
+  void ExecuteMarketInteraction(const cinder::app::KeyEvent& key_event);
+
+  /**
+   * Buys the item if the player decides
+   *
+   * @param item_index the index of the item in the items list
+   */
+  void BuyItem(size_t item_index);
+
+  /**
+   * Changes the dialogue for the npc who controls the market
+   */
+  void ChangeMarketDialogue();
 
   /**
    * Handles the player's interactions with any npc, be it
@@ -284,7 +316,7 @@ private:
    * @param file_path the path to the file to be read from
    * @return the text stored in the file
    */
-  std::string GetTextFromFile(std::string& file_path);
+  std::string GetTextFromFile(const std::string& file_path);
 
   /** Represents the current state of the game. */
   GameState state_;

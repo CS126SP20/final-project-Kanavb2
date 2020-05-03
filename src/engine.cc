@@ -16,7 +16,8 @@ Engine::Engine(size_t width, size_t height, std::vector<Item> items,
         width_{width},
         height_{height},
         items_{std::move(items)},
-        direction_{Direction::kRight} {
+        direction_{Direction::kRight},
+        is_key_found_{false} {
   InitializeNpcs();
 }
 
@@ -26,7 +27,7 @@ void Engine::InitializeNpcs() {
   npcs_.push_back(Npc("Rod", {16, 48}, Statistics(10,10,10,10), false));
   npcs_.push_back(Npc("Klutz", {28, 20}, Statistics(10,10,10,10), false));
   npcs_.push_back(Npc("Azura", {38, 10}, Statistics(10,10,10,10), false));
-
+  npcs_.push_back(Npc("Boi", {36, 36}, Statistics(10, 10, 10, 10), false));
   npcs_.push_back(Npc("Sven", {25, 20}, Statistics(7,7,7,7), true));
   npcs_.push_back(Npc("Elf", {26, 20}, Statistics(11,11,11,11), true));
 }
@@ -115,6 +116,10 @@ Item Engine::GetItem(const std::string& item_name) const {
       return item;
     }
   }
+}
+
+Item Engine::GetItemFromIndex(size_t index) const {
+  return items_[index];
 }
 
 void Engine::SetTile(const Location& location, const Tile& tile) {

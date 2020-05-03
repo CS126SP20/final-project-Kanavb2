@@ -127,11 +127,28 @@ class Engine {
   Item GetItem(const std::string& item_name) const;
 
   /**
+   * Accessor function for any item in the game.
+   *
+   * @param index the index of the item in the items list
+   * @return the item to be retrieved
+   */
+  Item GetItemFromIndex(size_t index) const;
+
+  /**
+   * Gets the number of items in the game that the player does not have.
+   *
+   * @return the number of items
+   */
+  inline size_t GetNumItems() const {
+    return items_.size();
+  }
+
+  /**
    * Adds a certain amount of money to the player's pocket
    *
    * @param money_to_add the amount of money to be added
    */
-  void AddMoney(size_t money_to_add) {
+  inline void AddMoney(size_t money_to_add) {
     player_.money_ += money_to_add;
   }
 
