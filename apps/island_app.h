@@ -116,6 +116,18 @@ private:
    void InitializeNpcTextFilePaths();
 
   /**
+   * Initializes the npc sprite file paths to display the npcs on the screen.
+   */
+  void InitializeNpcSpriteFilePaths();
+
+  /**
+   * Adds the npc sprites to the map to be used to draw the sprites.
+   *
+   * @param name the name of the npc
+   */
+  void AddNpcSprites(const std::string& name);
+
+  /**
    * Draws the player on the map.
    */
   void DrawPlayer() const;
@@ -276,6 +288,12 @@ private:
    * the file path as the corresponding value.
    */
   std::unordered_map<std::string, std::string> npc_text_files_;
+
+  /**
+   * Stores the npc sprites with the name of the npc as the key and
+   * the file path as the corresponding value.
+   */
+  std::unordered_map<std::string, std::string> npc_sprite_files_;
 
   /** The text to be displayed when the player interacts with the map. */
   std::string display_text_;

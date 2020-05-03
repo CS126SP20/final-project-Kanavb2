@@ -55,6 +55,7 @@ void IslandApp::setup() {
   InitializeItems();
   InitializeDisplayFilePaths();
   InitializeNpcTextFilePaths();
+  InitializeNpcSpriteFilePaths();
 
   cinder::gl::disableDepthRead();
   cinder::gl::disableDepthWrite();
@@ -87,9 +88,6 @@ void IslandApp::InitializeItems() {
                      "An extra heart, it will help strengthen "
                      "your life force in battle.",
                      "assets/heart.png");
-  island::Item blessing("blessing",
-                      "A blessing from g a w d",
-                      "assets/blessing.png");
   island::Item key("key",
                       "Looks like a key to someone's house",
                       "assets/key.png");
@@ -126,19 +124,40 @@ void IslandApp::InitializeDisplayFilePaths() {
 
 void IslandApp::InitializeNpcTextFilePaths() {
   npc_text_files_.insert(std::pair<string, string>
-       ("Rosalyn", "assets/npc/dialogue/rosalyn.txt"));
+       ("Rosalyn", "assets/npc/dialogue/Rosalyn.txt"));
   npc_text_files_.insert(std::pair<string, string>
-       ("John", "assets/npc/dialogue/john.txt"));
+       ("John", "assets/npc/dialogue/John.txt"));
   npc_text_files_.insert(std::pair<string, string>
-       ("Azura", "assets/npc/dialogue/azura.txt"));
+       ("Azura", "assets/npc/dialogue/Azura.txt"));
   npc_text_files_.insert(std::pair<string, string>
-       ("Klutz", "assets/npc/dialogue/klutz.txt"));
+       ("Klutz", "assets/npc/dialogue/Klutz.txt"));
   npc_text_files_.insert(std::pair<string, string>
-       ("Rod", "assets/npc/dialogue/rod.txt"));
+       ("Rod", "assets/npc/dialogue/Rod.txt"));
   npc_text_files_.insert(std::pair<string, string>
-       ("Sven", "assets/npc/dialogue/sven.txt"));
+       ("Sven", "assets/npc/dialogue/Sven.txt"));
   npc_text_files_.insert(std::pair<string, string>
-       ("Elf", "assets/npc/dialogue/elf.txt"));
+       ("Elf", "assets/npc/dialogue/Elf.txt"));
+}
+
+void IslandApp::InitializeNpcSpriteFilePaths() {
+  AddNpcSprites("Rosalyn");
+  AddNpcSprites("John");
+  AddNpcSprites("Azura");
+  AddNpcSprites("Klutz");
+  AddNpcSprites("Rod");
+  AddNpcSprites("Sven");
+  AddNpcSprites("Elf");
+}
+
+void IslandApp::AddNpcSprites(const std::string& name) {
+  npc_text_files_.insert(std::pair<string, string>
+      (name + "right", "assets/npc/images/" + name + "_right.txt"));
+  npc_text_files_.insert(std::pair<string, string>
+      (name + "left", "assets/npc/images/" + name + "_left.txt"));
+  npc_text_files_.insert(std::pair<string, string>
+      (name + "up", "assets/npc/images/" + name + "_up.txt"));
+  npc_text_files_.insert(std::pair<string, string>
+      (name + "down", "assets/npc/images/" + name + "_down.txt"));
 }
 
 void IslandApp::update() {
