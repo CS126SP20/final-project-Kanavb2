@@ -87,9 +87,9 @@ void Engine::AddInventoryItem(const Item& item) {
   player_.inventory_.push_back(item);
 }
 
-void Engine::RemoveInventoryItem(const Item &item) {
+void Engine::RemoveInventoryItem(const std::string& name) {
   for (size_t index = 0; index < player_.inventory_.size(); index++) {
-    if (player_.inventory_[index].name_ == item.name_) {
+    if (player_.inventory_[index].name_ == name) {
       player_.inventory_.erase(player_.inventory_.begin() + index);
       break;
     }

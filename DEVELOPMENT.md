@@ -50,8 +50,9 @@
 
 ### 5/2/20
 * Added npc placeholders throughout the map
+* Added npc sprites
+* Made npc sprites change directions depending on where the user interacted with them from
 
 ### To do:
-* Add npc sprites
 * Add a save state
 * Figure out combat system

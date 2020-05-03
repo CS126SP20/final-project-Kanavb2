@@ -91,9 +91,9 @@ class Engine {
   /**
    * Removes the specified item from the player's inventory.
    *
-   * @param item the item to be removed
+   * @param name the name of the item to be removed
    */
-  void RemoveInventoryItem(const Item& item);
+  void RemoveInventoryItem(const std::string& name);
 
   /**
    * Adds the specified item to the list of items in the game.
@@ -110,14 +110,13 @@ class Engine {
   void RemoveItem(const std::string& item_name);
 
   /**
-   * Accessor function for an item in the player's inventory.
+   * Sets the tile at a particular location to a new Tile value
+   * Wrapper function for Map's SetTile
    *
-   * @param index the index of the item in the inventory
-   * @return the item to be retrieved
+   * @param location the location where the value of the tile is to be changed
+   * @param tile the new value of the tile
    */
-  inline Item GetInventoryItem(size_t index) const {
-    return player_.inventory_[index];
-  }
+  void SetTile(const Location& location, const Tile& tile);
 
   /**
    * Accessor function for any item in the game.
@@ -126,6 +125,34 @@ class Engine {
    * @return the item to be retrieved
    */
   Item GetItem(const std::string& item_name) const;
+
+  /**
+   * Adds a certain amount of money to the player's pocket
+   *
+   * @param money_to_add the amount of money to be added
+   */
+  void AddMoney(size_t money_to_add) {
+    player_.money_ += money_to_add;
+  }
+
+  /**
+   * Remove a certain amount of money from the player's pocket
+   *
+   * @param money_to_remove the amount money to be removed
+   */
+  void RemoveMoney(size_t money_to_remove) {
+    player_.money_ -= money_to_remove;
+  }
+
+  /**
+   * Accessor function for an item in the player's inventory.
+   *
+   * @param index the index of the item in the inventory
+   * @return the item to be retrieved
+   */
+  inline Item GetInventoryItem(size_t index) const {
+    return player_.inventory_[index];
+  }
 
   /**
    * Accessor function for the player in the game.
@@ -146,13 +173,22 @@ class Engine {
   }
 
   /**
-   * Sets the tile at a particular location to a new Tile value
-   * Wrapper function for Map's SetTile
+   * Accessor function for the key value.
    *
-   * @param location the location where the value of the tile is to be changed
-   * @param tile the new value of the tile
+   * @return whether the key has been found or not
    */
-  void SetTile(const Location& location, const Tile& tile);
+  inline bool GetKey() const {
+    return is_key_found_;
+  }
+
+  /**
+   * Sets the value of the variable that stores whether the key has been found.
+   *
+   * @param is_key_found true if the key is found, false otherwise
+   */
+  inline void SetKey(bool is_key_found) {
+    is_key_found_ = is_key_found;
+  }
 
  private:
   /** The width of the island map. */
@@ -160,6 +196,9 @@ class Engine {
 
   /** The height of the island map. */
   size_t height_;
+
+  /** Determines whether the key to the house has been found. */
+  bool is_key_found_;
 
   /** The direction the player character moves in. */
   Direction direction_;

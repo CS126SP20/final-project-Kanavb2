@@ -348,7 +348,7 @@ void IslandApp::DrawMoney() const {
    Rectf( center.x / kScreenDivider + 50.0 / 800.0 * width,
           center.y / kScreenDivider + 20.0 / 800.0 * height,
           center.x / kScreenDivider + 200.0 / 800.0 * width,
-          center.y / kScreenDivider + 120.0 / 800.0 * height));
+          center.y / kScreenDivider + 100.0 / 800.0 * height));
 }
 
 void IslandApp::DrawInventoryDescription() const {
@@ -622,6 +622,7 @@ void IslandApp::ExecutePlayerInteractions() {
     state_ = GameState::kDisplayingText;
     if (display_text_files_.count(facing_tile)) {
       if (facing_tile == Tile::kKey) {
+        engine_.SetKey(true);
         engine_.AddInventoryItem(engine_.GetItem("key"));
         engine_.RemoveItem("key");
         engine_.SetTile(facing_location, Tile::kTree);
@@ -637,6 +638,10 @@ void IslandApp::ExecutePlayerInteractions() {
 
 void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
   Npc npc = engine_.GetNpcAtLocation(location);
+
+  if (npc_text_files_["Klutz"] == "assets/npc/dialogue/Klutz_during_key.txt") {
+    npc_text_files_["Klutz"] = "assets/npc/dialogue/Klutz_after_key.txt";
+  }
 
   UpdateActiveNpcSprites(npc);
   display_text_ = GetTextFromFile(npc_text_files_[npc.name_]);
@@ -672,10 +677,18 @@ void IslandApp::UpdateActiveNpcSprites(const Npc& npc) {
   active_npc_sprite_files_[npc.name_] = facing_direction;
 }
 
-std::string IslandApp::GetTextFromFile(const std::string& file_path) const {
+std::string IslandApp::GetTextFromFile(std::string& file_path) {
+  if (engine_.GetKey() && file_path == "assets/npc/dialogue/Klutz.txt") {
+    engine_.SetKey(false);
+    engine_.AddMoney(8800);
+    engine_.RemoveInventoryItem("key");
+    npc_text_files_["Klutz"] = "assets/npc/dialogue/Klutz_during_key.txt";
+  }
+
   std::ifstream file(file_path);
   std::string display_text;
   std::getline(file, display_text, '\0');
+
   return display_text;
 }
 

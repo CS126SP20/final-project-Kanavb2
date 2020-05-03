@@ -284,7 +284,7 @@ private:
    * @param file_path the path to the file to be read from
    * @return the text stored in the file
    */
-  std::string GetTextFromFile(const std::string& file_path) const;
+  std::string GetTextFromFile(std::string& file_path);
 
   /** Represents the current state of the game. */
   GameState state_;
