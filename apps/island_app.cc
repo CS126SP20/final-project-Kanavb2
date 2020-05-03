@@ -56,6 +56,7 @@ void IslandApp::setup() {
   InitializeDisplayFilePaths();
   InitializeNpcTextFilePaths();
   InitializeNpcSpriteFilePaths();
+  InitializeActiveNpcSpriteFiles();
 
   cinder::gl::disableDepthRead();
   cinder::gl::disableDepthWrite();
@@ -140,24 +141,37 @@ void IslandApp::InitializeNpcTextFilePaths() {
 }
 
 void IslandApp::InitializeNpcSpriteFilePaths() {
-  AddNpcSprites("Rosalyn");
-  AddNpcSprites("John");
-  AddNpcSprites("Azura");
-  AddNpcSprites("Klutz");
-  AddNpcSprites("Rod");
-  AddNpcSprites("Sven");
-  AddNpcSprites("Elf");
+  for (const auto& npc : engine_.GetNpcs()) {
+    AddNpcSprites(npc.name_);
+  }
 }
 
 void IslandApp::AddNpcSprites(const std::string& name) {
-  npc_text_files_.insert(std::pair<string, string>
-      (name + "right", "assets/npc/images/" + name + "_right.txt"));
-  npc_text_files_.insert(std::pair<string, string>
-      (name + "left", "assets/npc/images/" + name + "_left.txt"));
-  npc_text_files_.insert(std::pair<string, string>
-      (name + "up", "assets/npc/images/" + name + "_up.txt"));
-  npc_text_files_.insert(std::pair<string, string>
-      (name + "down", "assets/npc/images/" + name + "_down.txt"));
+  npc_sprite_files_.insert(std::pair<string, string>
+      (name + "_right", "assets/npc/images/" + name + "_right.png"));
+  npc_sprite_files_.insert(std::pair<string, string>
+      (name + "_left", "assets/npc/images/" + name + "_left.png"));
+  npc_sprite_files_.insert(std::pair<string, string>
+      (name + "_up", "assets/npc/images/" + name + "_up.png"));
+  npc_sprite_files_.insert(std::pair<string, string>
+      (name + "_down", "assets/npc/images/" + name + "_down.png"));
+}
+
+void IslandApp::InitializeActiveNpcSpriteFiles() {
+  active_npc_sprite_files_.insert(std::pair<string, Direction>
+      ("Rosalyn", Direction::kUp));
+  active_npc_sprite_files_.insert(std::pair<string, Direction>
+      ("John", Direction::kDown));
+  active_npc_sprite_files_.insert(std::pair<string, Direction>
+      ("Azura", Direction::kLeft));
+  active_npc_sprite_files_.insert(std::pair<string, Direction>
+      ("Klutz", Direction::kRight));
+  active_npc_sprite_files_.insert(std::pair<string, Direction>
+      ("Rod", Direction::kUp));
+  active_npc_sprite_files_.insert(std::pair<string, Direction>
+      ("Sven", Direction::kUp));
+  active_npc_sprite_files_.insert(std::pair<string, Direction>
+      ("Elf", Direction::kUp));
 }
 
 void IslandApp::update() {
@@ -189,12 +203,22 @@ void IslandApp::draw() {
   Translate(false);
   DrawMap();
   DrawPlayer();
+  DrawNpcs();
   if (state_ == GameState::kDisplayingText) {
     DrawTextBox();
   } else if (state_ == GameState::kInventory) {
     DrawInventory();
   }
   Translate(true);
+}
+
+void IslandApp::DrawMap() const {
+  auto map = cinder::gl::Texture::create
+      (cinder::loadImage("assets/map.png"));
+  cinder::gl::draw(map, Rectf( 0,
+                               0,
+                               kMapTileSize * kScreenSize,
+                               kMapTileSize * kScreenSize));
 }
 
 void IslandApp::DrawPlayer() const {
@@ -206,13 +230,19 @@ void IslandApp::DrawPlayer() const {
                                  kPlayerTileSize * (loc.GetCol() + 1)));
 }
 
-void IslandApp::DrawMap() const {
-  auto map = cinder::gl::Texture::create
-      (cinder::loadImage("assets/map.png"));
-  cinder::gl::draw(map, Rectf( 0,
-                                0,
-                                kMapTileSize * kScreenSize,
-                                kMapTileSize * kScreenSize));
+void IslandApp::DrawNpcs() {
+  for (const auto& npc : engine_.GetNpcs()) {
+    Location loc = npc.location_;
+    Direction facing_direction = active_npc_sprite_files_.at(npc.name_);
+    string image_path = GetActiveNpcImagePath(npc.name_, facing_direction);
+
+    cinder::gl::TextureRef image =
+        cinder::gl::Texture::create(cinder::loadImage(image_path));
+    cinder::gl::draw(image, Rectf( kPlayerTileSize * loc.GetRow(),
+                                   kPlayerTileSize * loc.GetCol(),
+                                   kPlayerTileSize * (loc.GetRow() + 1),
+                                   kPlayerTileSize * (loc.GetCol() + 1)));
+  }
 }
 
 void IslandApp::DrawTextBox() {
@@ -387,7 +417,7 @@ cinder::gl::TextureRef IslandApp::GetPlayerImage() const {
       break;
   }
 
-  return cinder::gl::Texture::create (cinder::loadImage(image_path));
+  return cinder::gl::Texture::create(cinder::loadImage(image_path));
 }
 
 string IslandApp::GetDownImagePath() const {
@@ -445,6 +475,27 @@ string IslandApp::GetRightImagePath() const {
   }
   return "";
 }
+
+string IslandApp::GetActiveNpcImagePath
+      (const string& name, const Direction& direction) {
+  string dir_path;
+  switch (direction) {
+    case Direction::kUp :
+      dir_path = "_up";
+      break;
+    case Direction::kDown :
+      dir_path = "_down";
+      break;
+    case Direction::kLeft :
+      dir_path = "_left";
+      break;
+    case Direction::kRight :
+      dir_path = "_right";
+      break;
+  }
+  return npc_sprite_files_.at(name + dir_path);
+}
+
 
 void IslandApp::MovePlayerCamera() {
   size_t screen_width = getWindowWidth();
@@ -600,6 +651,7 @@ void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
 
   }*/
 }
+
 
 std::string IslandApp::GetTextFromFile(const std::string& file_path) const {
   std::ifstream file(file_path);

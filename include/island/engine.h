@@ -137,6 +137,15 @@ class Engine {
   }
 
   /**
+   * Accessor function for the list of npcs in the game.
+   *
+   * @return the npcs in the game
+   */
+  inline std::vector<Npc> GetNpcs() {
+    return npcs_;
+  }
+
+  /**
    * Sets the tile at a particular location to a new Tile value
    * Wrapper function for Map's SetTile
    *

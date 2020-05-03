@@ -121,6 +121,11 @@ private:
   void InitializeNpcSpriteFilePaths();
 
   /**
+   * Initializes the sprites to be drawn on the screen.
+   */
+  void InitializeActiveNpcSpriteFiles();
+
+  /**
    * Adds the npc sprites to the map to be used to draw the sprites.
    *
    * @param name the name of the npc
@@ -128,17 +133,24 @@ private:
   void AddNpcSprites(const std::string& name);
 
   /**
-   * Draws the player on the map.
-   */
-  void DrawPlayer() const;
-
-  /**
    * Draws the map in the background of the game.
    */
   void DrawMap() const;
 
   /**
+   * Draws the player on the map.
+   */
+  void DrawPlayer() const;
+
+  /**
+   * Draws the npcs throughout the map.
+   * Non const since it accesses engine's list of npcs.
+   */
+  void DrawNpcs();
+
+  /**
    * Draws the text box that displays the player's interaction text.
+   * Non const since the typewriter effect used changes char_counter_.
    */
   void DrawTextBox();
 
@@ -229,6 +241,16 @@ private:
   std::string GetRightImagePath() const;
 
   /**
+   *
+   *
+   * @param name
+   * @param direction
+   * @return
+   */
+  std::string GetActiveNpcImagePath
+      (const std::string& name, const island::Direction& direction);
+
+  /**
    * Determines what the program should do when one of the
    * movement directed keys is pressed on the keyboard.
    *
@@ -294,6 +316,12 @@ private:
    * the file path as the corresponding value.
    */
   std::unordered_map<std::string, std::string> npc_sprite_files_;
+
+  /**
+   * The npc sprites which are drawn on the screen, mapped with the npc name
+   * as the key and the direction in which they are facing as the value.
+   */
+  std::unordered_map<std::string, island::Direction> active_npc_sprite_files_;
 
   /** The text to be displayed when the player interacts with the map. */
   std::string display_text_;
