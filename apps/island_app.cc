@@ -233,7 +233,7 @@ void IslandApp::DrawPlayer() const {
 void IslandApp::DrawNpcs() {
   for (const auto& npc : engine_.GetNpcs()) {
     Location loc = npc.location_;
-    Direction facing_direction = active_npc_sprite_files_.at(npc.name_);
+    Direction facing_direction = active_npc_sprite_files_[npc.name_];
     string image_path = GetActiveNpcImagePath(npc.name_, facing_direction);
 
     cinder::gl::TextureRef image =
@@ -493,7 +493,7 @@ string IslandApp::GetActiveNpcImagePath
       dir_path = "_right";
       break;
   }
-  return npc_sprite_files_.at(name + dir_path);
+  return npc_sprite_files_[name + dir_path];
 }
 
 
@@ -627,7 +627,7 @@ void IslandApp::ExecutePlayerInteractions() {
         engine_.SetTile(facing_location, Tile::kTree);
       }
 
-      file_path = display_text_files_.at(facing_tile);
+      file_path = display_text_files_[facing_tile];
       display_text_ = GetTextFromFile(file_path);
     } else {
       state_ = GameState::kPlaying;
@@ -638,7 +638,8 @@ void IslandApp::ExecutePlayerInteractions() {
 void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
   Npc npc = engine_.GetNpcAtLocation(location);
 
-  display_text_ = GetTextFromFile(npc_text_files_.at(npc.name_));
+  UpdateActiveNpcSprites(npc);
+  display_text_ = GetTextFromFile(npc_text_files_[npc.name_]);
   if (state_ == GameState::kDisplayingText) {
     state_ = GameState::kPlaying;
   } else {
@@ -652,6 +653,24 @@ void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
   }*/
 }
 
+void IslandApp::UpdateActiveNpcSprites(const Npc& npc) {
+  Direction facing_direction;
+  switch (prev_direction_) {
+    case Direction::kUp :
+      facing_direction = Direction::kDown;
+      break;
+    case Direction::kDown :
+      facing_direction = Direction::kUp;
+      break;
+    case Direction::kLeft :
+      facing_direction = Direction::kRight;
+      break;
+    case Direction::kRight :
+      facing_direction = Direction::kLeft;
+      break;
+  }
+  active_npc_sprite_files_[npc.name_] = facing_direction;
+}
 
 std::string IslandApp::GetTextFromFile(const std::string& file_path) const {
   std::ifstream file(file_path);

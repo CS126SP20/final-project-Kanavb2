@@ -271,6 +271,14 @@ private:
   void ExecuteNpcInteraction(const island::Location& location);
 
   /**
+   * Updates the active npc sprites when the player
+   * interacts with a particular npc.
+   *
+   * @param npc the npc the player interacted with
+   */
+  void UpdateActiveNpcSprites(const island::Npc& npc);
+
+  /**
    * Retrieves the text from a file.
    *
    * @param file_path the path to the file to be read from
