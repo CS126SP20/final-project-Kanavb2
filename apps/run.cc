@@ -2,6 +2,7 @@
 
 #include <cinder/app/App.h>
 #include <cinder/app/RendererGl.h>
+#include <gflags/gflags.h>
 
 #include "island_app.h"
 
@@ -9,6 +10,10 @@ using cinder::app::App;
 using cinder::app::RendererGl;
 
 namespace islandapp {
+
+DEFINE_string(player_name, "Meow", "The name of the player");
+DEFINE_bool(new_game, true, "Whether the player plays a new game");
+DEFINE_string(load, "no_file", "The file path to the save state");
 
 const int kSamples = 8;
 const int kWidth = 800;

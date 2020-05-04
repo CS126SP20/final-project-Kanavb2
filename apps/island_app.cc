@@ -4,6 +4,8 @@
 
 #include <cinder/ImageIo.h>
 #include <cinder/gl/draw.h>
+#include <gflags/gflags.h>
+#include <gflags/gflags_declare.h>
 
 #if defined(CINDER_COCOA_TOUCH)
 const char kNormalFont[] = "Arial";
@@ -33,10 +35,14 @@ using std::chrono::seconds;
 using std::chrono::system_clock;
 using std::string;
 
+DECLARE_string(player_name);
+DECLARE_bool(new_game);
+DECLARE_string(load);
+
 IslandApp::IslandApp()
     : engine_{island::kMapSize, island::kMapSize,
               std::vector<island::Item>(),
-              "meow",
+              FLAGS_player_name,
               {10, 4},
               {10, 10, 10, 10},
               std::vector<island::Item>(),
@@ -578,7 +584,9 @@ void IslandApp::keyDown(KeyEvent event) {
     }
 
     case KeyEvent::KEY_y:
-      ExecuteMarketInteraction(event);
+      if (state_ == GameState::kMarket) {
+        ExecuteMarketInteraction(event);
+      }
       break;
   }
 }

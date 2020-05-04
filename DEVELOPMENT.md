@@ -53,6 +53,10 @@
 * Added npc sprites
 * Made npc sprites change directions depending on where the user interacted with them from
 
+### 5/3/20
+* Added a market where the player can buy items to use in battle
+* Added a gflags interface for the user to enter specifics such as their name, whether they want to start a new game etc.
+
 ### To do:
 * Add a save state
 * Figure out combat system
