@@ -40,8 +40,8 @@ using std::chrono::system_clock;
 using std::string;
 
 DECLARE_string(player_name);
-DECLARE_bool(new_game);
 DECLARE_string(load);
+DECLARE_bool(new_game);
 
 IslandApp::IslandApp()
     : engine_{island::kMapSize, island::kMapSize,

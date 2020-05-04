@@ -94,7 +94,40 @@ void Engine::Save() {
 }
 
 void Engine::Load(const std::string& file_path) {
+  std::ifstream read_file(file_path);
+  json game_engine;
+  read_file >> game_engine;
 
+  std::vector<Item> items;
+  std::vector<Item> inventory_items;
+  json json_items;
+  json json_inventory_items;
+
+  for (const auto& item : json_items) {
+    items.emplace_back(item["name"], item["description"], item["file_path"]);
+  }
+  for (const auto& inventory_item : json_inventory_items) {
+    inventory_items.emplace_back(inventory_item["name"],
+        inventory_item["description"], inventory_item["file_path"]);
+  }
+
+  width_ = game_engine["width"];
+  height_ = game_engine["height"];
+  is_key_found_ = game_engine["is_key_found"];
+  items_ = items;
+  player_.name_ = game_engine["player"]["name"];
+  player_.location_ = {game_engine["player"]["location"]["row"],
+                       game_engine["player"]["location"]["col"]};
+  player_.statistics_.hit_points_ = game_engine["player"]["statistics"]["hp"];
+  player_.statistics_.attack_ = game_engine["player"]["statistics"]["atk"];
+  player_.statistics_.defense_ = game_engine["player"]["statistics"]["def"];
+  player_.statistics_.speed_ = game_engine["player"]["statistics"]["spe"];
+  player_.inventory_ = inventory_items;
+  player_.money_ = game_engine["player"]["money"];
+
+  if (is_key_found_) {
+    map_.SetTile(kKeyLocation, kTree);
+  }
 }
 
 bool Engine::IsValidDirection(const Direction &direction) const {
