@@ -21,13 +21,13 @@ struct Character {
           statistics_(statistics) {}
 
   /** The name of the character. */
-  const std::string name_;
+  std::string name_;
 
   /** The current location of the character. */
   Location location_;
 
   /** The statistics for the character, used in battle. */
-  const Statistics statistics_;
+  Statistics statistics_;
 };
 
 }  // namespace island

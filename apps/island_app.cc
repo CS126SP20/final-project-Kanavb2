@@ -6,6 +6,7 @@
 #include <cinder/gl/draw.h>
 #include <gflags/gflags.h>
 #include <gflags/gflags_declare.h>
+#include <nlohmann/json.hpp>
 
 #if defined(CINDER_COCOA_TOUCH)
 const char kNormalFont[] = "Arial";
@@ -27,10 +28,13 @@ using cinder::Rectf;
 using cinder::TextBox;
 using cinder::ColorA;
 using cinder::app::KeyEvent;
+using nlohmann::json;
 using island::Direction;
 using island::Location;
 using island::Tile;
 using island::Npc;
+using island::Statistics;
+using island::Item;
 using std::chrono::seconds;
 using std::chrono::system_clock;
 using std::string;
@@ -53,8 +57,11 @@ IslandApp::IslandApp()
       last_changed_direction_{0},
       is_changed_direction_{false},
       prev_direction_{Direction::kDown},
-      camera_{0,0}
-      {}
+      camera_{0,0} {
+  if (!FLAGS_new_game) {
+    engine_.Load(FLAGS_load);
+  }
+}
 
 void IslandApp::setup() {
   InitializeAudio();
@@ -189,6 +196,10 @@ void IslandApp::update() {
 
   if (!background_audio_->isPlaying()) {
     background_audio_->start();
+  }
+
+  if (engine_.GetKey()) {
+    npc_text_files_["Klutz"] = "assets/npc/dialogue/Klutz_after_key.txt";
   }
 
   MovePlayerCamera();
@@ -527,67 +538,63 @@ void IslandApp::MovePlayerCamera() {
 void IslandApp::keyDown(KeyEvent event) {
   switch (event.getCode()) {
     case KeyEvent::KEY_UP:
-    case KeyEvent::KEY_w: {
+    case KeyEvent::KEY_w:
       HandleMovement(Direction::kUp);
       break;
-    }
 
     case KeyEvent::KEY_DOWN:
-    case KeyEvent::KEY_s: {
+    case KeyEvent::KEY_s:
       HandleMovement(Direction::kDown);
       break;
-    }
 
     case KeyEvent::KEY_LEFT:
-    case KeyEvent::KEY_a: {
+    case KeyEvent::KEY_a:
       HandleMovement(Direction::kLeft);
       break;
-    }
 
     case KeyEvent::KEY_RIGHT:
-    case KeyEvent::KEY_d: {
+    case KeyEvent::KEY_d:
       HandleMovement(Direction::kRight);
       break;
-    }
 
-    case KeyEvent::KEY_p: {
+    case KeyEvent::KEY_p:
       if (state_ != GameState::kPaused) {
         state_ = GameState::kPaused;
       } else {
         state_ = GameState::kPlaying;
       }
       break;
-    }
 
-    case KeyEvent::KEY_z: {
+    case KeyEvent::KEY_z:
       if ((state_ == GameState::kDisplayingText || state_ == GameState::kMarket)
         && char_counter_ != display_text_.size()) {
         char_counter_ = display_text_.size();
-        return;
+        break;
       } else {
         char_counter_ = 0;
       }
 
       ExecutePlayerInteractions(event);
       break;
-    }
 
-    case KeyEvent::KEY_x: {
+    case KeyEvent::KEY_x:
       if (state_ == GameState::kDisplayingText) {
-        return;
+        break;
       } else if (state_ == GameState::kInventory) {
         state_ = GameState::kPlaying;
       } else {
         state_ = GameState::kInventory;
       }
       break;
-    }
 
     case KeyEvent::KEY_y:
       if (state_ == GameState::kMarket) {
         ExecuteMarketInteraction(event);
       }
       break;
+
+    case KeyEvent::KEY_v:
+      engine_.Save();
   }
 }
 
@@ -741,7 +748,6 @@ void IslandApp::UpdateActiveNpcSprites(const Npc& npc) {
 
 std::string IslandApp::GetTextFromFile(const string& file_path) {
   if (engine_.GetKey() && file_path == "assets/npc/dialogue/Klutz.txt") {
-    engine_.SetKey(false);
     engine_.AddMoney(kKeyMoney);
     engine_.RemoveInventoryItem("key");
     npc_text_files_["Klutz"] = "assets/npc/dialogue/Klutz_during_key.txt";

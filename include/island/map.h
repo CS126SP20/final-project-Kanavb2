@@ -40,6 +40,7 @@ public:
   /** Constructor which initializes the map with tile values. */
   Map();
 
+  /** Initializes the map for the tiles, mapping a char to a tile object. */
   void InitializeMapTiles();
 
   /**

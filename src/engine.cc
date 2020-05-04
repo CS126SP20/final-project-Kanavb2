@@ -1,11 +1,16 @@
 // Copyright (c) 2020 Kanav Bhatnagar. All rights reserved.
 
+#include <nlohmann/json.hpp>
+
 #include <island/engine.h>
 #include <island/location.h>
 
+#include <fstream>
 #include <utility>
 
 namespace island {
+
+using nlohmann::json;
 
 Engine::Engine(size_t width, size_t height, std::vector<Item> items,
     const std::string& player_name, const Location& player_loc,
@@ -54,6 +59,41 @@ void Engine::ExecuteTimeStep() {
 }
 
 void Engine::Save() {
+  std::ofstream write_file("assets/saved_game.json");
+  json game_engine;
+  json json_items;
+  json json_inventory_items;
+
+  for (const auto& item : items_) {
+    json_items["name"] = item.name_;
+    json_items["description"] = item.description_;
+    json_items["file_path"] = item.file_path_;
+  }
+  for (const auto& inventory_item : player_.inventory_) {
+    json_inventory_items["name"] = inventory_item.name_;
+    json_inventory_items["description"] = inventory_item.description_;
+    json_inventory_items["file_path"] = inventory_item.file_path_;
+  }
+
+  game_engine["width"] = width_;
+  game_engine["height"] = height_;
+  game_engine["is_key_found"] = is_key_found_;
+  game_engine["direction"] = direction_;
+  game_engine["player"]["name"] = player_.name_;
+  game_engine["player"]["location"]["row"] = player_.location_.GetRow();
+  game_engine["player"]["location"]["col"] = player_.location_.GetCol();
+  game_engine["player"]["statistics"]["hp"] = player_.statistics_.hit_points_;
+  game_engine["player"]["statistics"]["atk"] = player_.statistics_.attack_;
+  game_engine["player"]["statistics"]["def"] = player_.statistics_.defense_;
+  game_engine["player"]["statistics"]["spe"] = player_.statistics_.speed_;
+  game_engine["player"]["money"] = player_.money_;
+  game_engine["items"] = json_items;
+  game_engine["inventory_items"] = json_inventory_items;
+
+  write_file << game_engine;
+}
+
+void Engine::Load(const std::string& file_path) {
 
 }
 

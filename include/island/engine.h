@@ -18,6 +18,8 @@ namespace island {
  */
 class Engine {
  public:
+  /** The location of the key on the map. */
+  const Location kKeyLocation = {31, 45};
 
   /**
    * Creates a new game for the island.
@@ -49,6 +51,9 @@ class Engine {
 
   /** Saves the game. */
   void Save();
+
+  /** Loads the saved game. */
+  void Load(const std::string& file_path);
 
   /** Determines whether the direction the player wants to move in is valid. */
   bool IsValidDirection(const Direction& direction) const;
@@ -229,16 +234,8 @@ class Engine {
   /** The list of all items in the game. */
   std::vector<Item> items_;
 
-  /**
-   * The list of all the non player characters in the game.
-   */
+  /** The list of all the non player characters in the game. */
   std::vector<Npc> npcs_;
-
-  /**
-   * The list of all the non player characters in the game, mapped from the
-   * name of the npc to the location where they are on the map.
-   */
-  std::unordered_map<std::string, Location> npc_locations_;
 };
 
 }  // namespace island
