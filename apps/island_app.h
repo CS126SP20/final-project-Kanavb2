@@ -27,6 +27,12 @@ enum class GameState {
   kDisplayingText
 };
 
+enum class BattleMove {
+  kAttack,
+  kHeal,
+  kRun
+};
+
 /** The class that interacts with cinder to run the game. */
 class IslandApp : public cinder::app::App {
 public:
@@ -77,6 +83,9 @@ public:
 
   /** Money awarded to the player every time they interact with the puddle. */
   const size_t kPuddleMoney = 100;
+
+  /** The statistical bonus the player gets from getting items. */
+  const double kStatMultiplier = 1.5;
 
   /** Determines how far down the text box is placed, higher is further down. */
   const double kTextLocMultiplier = 2.0;
@@ -243,6 +252,12 @@ private:
   void MovePlayerCamera();
 
   /**
+   * Updates the player's statistics multipliers based on which items
+   * the playe has in their inventory.
+   */
+  void UpdateStatisticMultipliers();
+
+  /**
    * Determines what the player character should look like
    * when they move in a particular direction.
    *
@@ -316,6 +331,19 @@ private:
    */
   void BattleKey(const cinder::app::KeyEvent& event);
 
+  /**
+   * Executes a battle step whenever the player battles the npc.
+   */
+  void ExecuteBattleStep();
+
+  /**
+   * Executes the npc's move in the battle.
+   */
+  void ExecuteNpcBattleMove();
+
+  /**
+   * Changes the volume of the game, mutes or un-mutes all the audios.
+   */
   void ToggleVolume();
 
   /**
@@ -379,6 +407,12 @@ private:
   /** Represents the current state of the game. */
   GameState state_;
 
+  /** The move the npc chooses in battle. */
+  BattleMove npc_battle_move_;
+
+  /** The move the player chooses in battle. */
+  BattleMove player_battle_move_;
+
   /** The time elapsed since the update function has been called. */
   std::chrono::time_point<std::chrono::system_clock> last_time_;
 
@@ -434,13 +468,34 @@ private:
   std::string display_text_;
 
   /** The name of the npc the player is currently battling. */
-  std::string battle_npc_;
+  island::Npc battle_npc_;
+
+  /** The stat bonus to hp for the player. */
+  double hp_multiplier_;
+
+  /** The stat bonus to attack for the player. */
+  double attack_multiplier_;
+
+  /** The stat bonus to defense for the player. */
+  double defense_multiplier_;
+
+  /** The stat bonus to speed for the player. */
+  double speed_multiplier_;
+
+  /** The hitpoints for the player, battle ends when this reaches 0. */
+  size_t player_hp_;
+
+  /** The hitpoints for the npc, battle ends when this reaches 0. */
+  size_t npc_hp_;
 
   /** The speed or delay of the game, i.e. a lesser value is faster. */
   size_t speed_;
 
   /** Keeps track of the characters to be displayed in a text message. */
   size_t char_counter_;
+
+  /** Keeps track of the number of turns in the battle. */
+  size_t battle_turn_counter_;
 
   /**
    * The number of directional commands
@@ -459,6 +514,12 @@ private:
    * based on whether the last npc the player encountered was combatable.
    */
   bool should_start_battle_;
+
+  /**
+   * Determines whether it's the player's or the npc's turn to move in
+   * battle, depending on their respective speed stats.
+   */
+  bool is_player_turn_{};
 };
 
 }  // namespace islandapp

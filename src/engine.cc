@@ -27,14 +27,14 @@ Engine::Engine(size_t width, size_t height, std::vector<Item> items,
 }
 
 void Engine::InitializeNpcs() {
-  npcs_.push_back(Npc("Rosalyn", {15, 2}, Statistics(10,10,10,10), false));
-  npcs_.push_back(Npc("John", {20, 1}, Statistics(10,10,10,10), false));
-  npcs_.push_back(Npc("Rod", {16, 48}, Statistics(10,10,10,10), false));
-  npcs_.push_back(Npc("Klutz", {28, 20}, Statistics(10,10,10,10), false));
-  npcs_.push_back(Npc("Azura", {38, 10}, Statistics(10,10,10,10), false));
-  npcs_.push_back(Npc("Boi", {36, 36}, Statistics(10, 10, 10, 10), false));
-  npcs_.push_back(Npc("Sven", {25, 20}, Statistics(7,7,7,7), true));
-  npcs_.push_back(Npc("Elf", {26, 20}, Statistics(11,11,11,11), true));
+  npcs_.push_back(Npc("Rosalyn", {15, 2}, Statistics(10,10,10,10), false, 0));
+  npcs_.push_back(Npc("John", {20, 1}, Statistics(10,10,10,10), false, 0));
+  npcs_.push_back(Npc("Rod", {16, 48}, Statistics(10,10,10,10), false, 0));
+  npcs_.push_back(Npc("Klutz", {28, 20}, Statistics(10,10,10,10), false, 0));
+  npcs_.push_back(Npc("Azura", {38, 10}, Statistics(10,10,10,10), false, 0));
+  npcs_.push_back(Npc("Boi", {36, 36}, Statistics(10, 10, 10, 10), false, 0));
+  npcs_.push_back(Npc("Sven", {25, 20}, Statistics(7,7,7,7), true, 500));
+  npcs_.push_back(Npc("Elf", {26, 20}, Statistics(11,11,11,11), true, 1000));
 }
 
 Location Engine::GetLocationDelta(const Direction& direction) const {
