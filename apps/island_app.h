@@ -21,10 +21,11 @@ namespace islandapp {
 /** Enum used to represents the game's current state. */
 enum class GameState {
   kPlaying,
-  kPaused,
-  kDisplayingText,
   kInventory,
-  kMarket
+  kMarket,
+  kBattle,
+  kBattleText,
+  kDisplayingText
 };
 
 /** The class that interacts with cinder to run the game. */
@@ -71,6 +72,9 @@ public:
 
   /** The reward of money one gets for completing the key quest. */
   const size_t kKeyMoney = 8800;
+
+  /** Money awarded to the player every time they interact with the puddle. */
+  const size_t kPuddleMoney = 100;
 
   /** Determines how far down the text box is placed, higher is further down. */
   const double kTextLocMultiplier = 2.0;
@@ -141,6 +145,10 @@ private:
    * @param name the name of the npc
    */
   void AddNpcSprites(const std::string& name);
+
+  void DrawBattle() const;
+
+  void DrawBattleText() const;
 
   /**
    * Draws the map in the background of the game.
@@ -251,14 +259,20 @@ private:
   std::string GetRightImagePath() const;
 
   /**
+   * Gets the image path for the NPC according to where the NPC is facing.
    *
-   *
-   * @param name
-   * @param direction
-   * @return
+   * @param name the name of the npc
+   * @param direction the direction the npc is facing
+   * @return the file path containing the image of the npc
    */
   std::string GetActiveNpcImagePath
       (const std::string& name, const island::Direction& direction);
+
+  void MovementKey(const cinder::app::KeyEvent& event);
+
+  void InteractionKey(const cinder::app::KeyEvent& event);
+
+  void BattleKey(const cinder::app::KeyEvent& event);
 
   /**
    * Determines what the program should do when one of the
@@ -272,17 +286,17 @@ private:
    * Handles the player's interactions with the map, displays text on the
    * screen accordingly.
    *
-   * @param key_event The key last pressed on the keyboard
+   * @param event The key last pressed on the keyboard
    */
-  void ExecutePlayerInteractions(const cinder::app::KeyEvent& key_event);
+  void ExecutePlayerInteractions(const cinder::app::KeyEvent& event);
 
   /**
    * Handles the player's interactions with the market, where the player
    * can but items depending on their money.
    *
-   * @param key_event The key last pressed on the keyboard
+   * @param event The key last pressed on the keyboard
    */
-  void ExecuteMarketInteraction(const cinder::app::KeyEvent& key_event);
+  void ExecuteMarketInteraction(const cinder::app::KeyEvent& event);
 
   /**
    * Buys the item if the player decides
@@ -326,6 +340,9 @@ private:
 
   /** The handler for the background audio. */
   cinder::audio::VoiceRef background_audio_;
+
+  /** The handler for the background audio. */
+  cinder::audio::VoiceRef battle_audio_;
 
   /** The handler for the text displaying audio. */
   cinder::audio::VoiceRef text_audio_;

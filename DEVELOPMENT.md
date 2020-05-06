@@ -57,6 +57,9 @@
 * Added a market where the player can buy items to use in battle
 * Added a gflags interface for the user to enter specifics such as their name, whether they want to start a new game etc.
 
+### 5/4/20
+* Added a save state, the player can save their current progress
+* Added the ability to load from a previously saved file
+
 ### To do:
-* Add a save state
 * Figure out combat system

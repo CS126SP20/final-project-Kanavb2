@@ -47,7 +47,7 @@ IslandApp::IslandApp()
     : engine_{island::kMapSize, island::kMapSize,
               std::vector<island::Item>(),
               FLAGS_player_name,
-              {10, 4},
+              {7, 0},
               {10, 10, 10, 10},
               std::vector<island::Item>(),
               1200},
@@ -80,6 +80,10 @@ void IslandApp::InitializeAudio() {
       (cinder::app::loadAsset("background_music.mp3"));
   background_audio_ = cinder::audio::Voice::create(background_src);
   background_audio_->start();
+
+  cinder::audio::SourceFileRef battle_src = cinder::audio::load
+      (cinder::app::loadAsset("battle_music.mp3"));
+  battle_audio_ = cinder::audio::Voice::create(battle_src);
 
   cinder::audio::SourceFileRef text_src = cinder::audio::load
       (cinder::app::loadAsset("text_sound.wav"));
@@ -181,10 +185,6 @@ void IslandApp::InitializeActiveNpcSpriteFiles() {
 }
 
 void IslandApp::update() {
-  if (state_ == GameState::kPaused) {
-    return;
-  }
-
   const auto time = system_clock::now();
   if (time - last_time_ > std::chrono::milliseconds(speed_)) {
     if (is_changed_direction_) {
@@ -194,8 +194,16 @@ void IslandApp::update() {
     last_time_ = time;
   }
 
-  if (!background_audio_->isPlaying()) {
+  if (state_ != GameState::kBattleText  && state_ != GameState::kBattle
+      && !background_audio_->isPlaying()) {
     background_audio_->start();
+    battle_audio_->stop();
+  }
+
+  if ((state_ == GameState::kBattle || state_ == GameState::kBattleText)
+      && !battle_audio_->isPlaying()) {
+    battle_audio_->start();
+    background_audio_->stop();
   }
 
   if (engine_.GetKey()) {
@@ -211,6 +219,14 @@ void IslandApp::draw() {
   cinder::gl::color(Color(1,1,1));
 
   Translate(false);
+  if (state_ == GameState::kBattle || state_ == GameState::kBattleText) {
+    DrawBattle();
+    if (state_ == GameState::kBattleText) {
+      DrawBattleText();
+      return;
+    }
+  }
+
   DrawMap();
   DrawPlayer();
   DrawNpcs();
@@ -220,6 +236,14 @@ void IslandApp::draw() {
     DrawInventory();
   }
   Translate(true);
+}
+
+void IslandApp::DrawBattle() const {
+
+}
+
+void IslandApp::DrawBattleText() const {
+
 }
 
 void IslandApp::DrawMap() const {
@@ -333,7 +357,7 @@ void IslandApp::DrawItems() const {
         Rectf(center.x / kScreenDivider + offset_start,
               center.y / kScreenDivider + height * 90.0 / 800.0,
               center.x / kScreenDivider + offset_start + width / 20.0,
-              center.y / kScreenDivider + height * 140 / 800.0));
+              center.y / kScreenDivider + height * 140.0 / 800.0));
   }
 }
 
@@ -358,7 +382,7 @@ void IslandApp::DrawMoney() const {
    Rectf( center.x / kScreenDivider + 50.0 / 800.0 * width,
           center.y / kScreenDivider + 20.0 / 800.0 * height,
           center.x / kScreenDivider + 200.0 / 800.0 * width,
-          center.y / kScreenDivider + 100.0 / 800.0 * height));
+          center.y / kScreenDivider + 90.0 / 800.0 * height));
 }
 
 void IslandApp::DrawInventoryDescription() const {
@@ -382,7 +406,7 @@ void IslandApp::DrawInventoryDescription() const {
 
   auto box = TextBox()
       .alignment(TextBox::LEFT)
-      .font(cinder::Font(kNormalFont, 2.0 * kFontSize / 3))
+      .font(cinder::Font(kNormalFont, 2.0 * kFontSize / 3.0))
       .size(size)
       .color(Color::black())
       .backgroundColor(ColorA(0, 0, 0, 0))
@@ -536,6 +560,35 @@ void IslandApp::MovePlayerCamera() {
 }
 
 void IslandApp::keyDown(KeyEvent event) {
+  if (state_ == GameState::kBattle || state_ == GameState::kBattleText) {
+    BattleKey(event);
+  }
+
+  switch (event.getCode()) {
+    case KeyEvent::KEY_UP:
+    case KeyEvent::KEY_w:
+    case KeyEvent::KEY_DOWN:
+    case KeyEvent::KEY_s:
+    case KeyEvent::KEY_LEFT:
+    case KeyEvent::KEY_a:
+    case KeyEvent::KEY_RIGHT:
+    case KeyEvent::KEY_d:
+      MovementKey(event);
+      break;
+
+    case KeyEvent::KEY_z:
+    case KeyEvent::KEY_x:
+    case KeyEvent::KEY_y:
+    case KeyEvent::KEY_n:
+      InteractionKey(event);
+      break;
+
+    case KeyEvent::KEY_v:
+      engine_.Save();
+  }
+}
+
+void IslandApp::MovementKey(const cinder::app::KeyEvent& event) {
   switch (event.getCode()) {
     case KeyEvent::KEY_UP:
     case KeyEvent::KEY_w:
@@ -556,18 +609,14 @@ void IslandApp::keyDown(KeyEvent event) {
     case KeyEvent::KEY_d:
       HandleMovement(Direction::kRight);
       break;
+  }
+}
 
-    case KeyEvent::KEY_p:
-      if (state_ != GameState::kPaused) {
-        state_ = GameState::kPaused;
-      } else {
-        state_ = GameState::kPlaying;
-      }
-      break;
-
+void IslandApp::InteractionKey(const cinder::app::KeyEvent& event) {
+  switch (event.getCode()) {
     case KeyEvent::KEY_z:
       if ((state_ == GameState::kDisplayingText || state_ == GameState::kMarket)
-        && char_counter_ != display_text_.size()) {
+          && char_counter_ != display_text_.size()) {
         char_counter_ = display_text_.size();
         break;
       } else {
@@ -593,13 +642,20 @@ void IslandApp::keyDown(KeyEvent event) {
       }
       break;
 
-    case KeyEvent::KEY_v:
-      engine_.Save();
+    case KeyEvent::KEY_n:
+      if (state_ == GameState::kMarket) {
+        state_ = GameState::kPlaying;
+      }
+      break;
   }
 }
 
+void IslandApp::BattleKey(const cinder::app::KeyEvent& event) {
+
+}
+
 void IslandApp::HandleMovement(const Direction& direction) {
-  if (state_ == GameState::kDisplayingText || state_ == GameState::kInventory) {
+  if (state_ != GameState::kPlaying) {
     return;
   }
 
@@ -618,7 +674,7 @@ void IslandApp::HandleMovement(const Direction& direction) {
   engine_.SetDirection(direction);
 }
 
-void IslandApp::ExecutePlayerInteractions(const KeyEvent& key_event) {
+void IslandApp::ExecutePlayerInteractions(const KeyEvent& event) {
   if (state_ == GameState::kDisplayingText) {
     state_ = GameState::kPlaying;
   } else if (state_ == GameState::kPlaying || state_ == GameState::kMarket){
@@ -628,7 +684,7 @@ void IslandApp::ExecutePlayerInteractions(const KeyEvent& key_event) {
 
     if (facing_location.GetRow() == kMarketLocation.GetRow()
       && facing_location.GetCol() == kMarketLocation.GetCol()) {
-      ExecuteMarketInteraction(key_event);
+      ExecuteMarketInteraction(event);
       return;
     }
 
@@ -646,6 +702,9 @@ void IslandApp::ExecutePlayerInteractions(const KeyEvent& key_event) {
         engine_.SetTile(facing_location, Tile::kTree);
       }
 
+      if (facing_tile == island::kPuddle) {
+        engine_.AddMoney(kPuddleMoney);
+      }
       file_path = display_text_files_[facing_tile];
       display_text_ = GetTextFromFile(file_path);
     } else {
@@ -654,7 +713,7 @@ void IslandApp::ExecutePlayerInteractions(const KeyEvent& key_event) {
   }
 }
 
-void IslandApp::ExecuteMarketInteraction(const KeyEvent& key_event) {
+void IslandApp::ExecuteMarketInteraction(const KeyEvent& event) {
   if (npc_text_files_["Boi"] == "assets/npc/dialogue/Boi_no_items.txt") {
     return;
   }
@@ -662,7 +721,7 @@ void IslandApp::ExecuteMarketInteraction(const KeyEvent& key_event) {
   UpdateActiveNpcSprites(npc);
 
   display_text_ = GetTextFromFile(npc_text_files_["Boi"]);
-  if(key_event.getCode() == KeyEvent::KEY_y) {
+  if(event.getCode() == KeyEvent::KEY_y) {
     BuyItem(0);
   } else {
     if (state_ == GameState::kMarket) {
@@ -720,11 +779,9 @@ void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
     state_ = GameState::kDisplayingText;
   }
 
-/*  if (npc.is_combatable_) {
-    return;
-  } else {
-
-  }*/
+  if (npc.is_combatable_ && char_counter_ == display_text_.size()) {
+    state_ = GameState::kBattle;
+  }
 }
 
 void IslandApp::UpdateActiveNpcSprites(const Npc& npc) {
