@@ -12,7 +12,7 @@ ci_make_app(
     APP_NAME    cinder-myapp
     CINDER_PATH ${CINDER_PATH}
     SOURCES     ${SOURCE_LIST}
-    LIBRARIES   mylibrary allegro gflags nlohmann_json
+    LIBRARIES   mylibrary gflags nlohmann_json
     BLOCKS
 )
 
