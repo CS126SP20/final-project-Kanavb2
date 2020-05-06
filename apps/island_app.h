@@ -57,6 +57,9 @@ public:
   /** The height of the text box to be displayed. */
   const size_t kTextBoxHeight = 150;
 
+  /** The max volume for all the audio files in the game. */
+  const size_t kMaxVolume = 1;
+
   /** The speed at which characters are displayed in the text box. */
   const size_t kCharSpeed = 1;
 
@@ -134,6 +137,12 @@ private:
   void InitializeNpcSpriteFilePaths();
 
   /**
+   * Initializes the battle npc sprite file paths to
+   * display the npcs in battle on the screen.
+   */
+  void InitializeNpcBattleSpriteFilePaths();
+
+  /**
    * Initializes the sprites to be drawn on the screen.
    */
   void InitializeActiveNpcSpriteFiles();
@@ -145,12 +154,24 @@ private:
    */
   void AddNpcSprites(const std::string& name);
 
+  /**
+   * Draws the battle scene whenever a battle is initiated.
+   */
   void DrawBattle();
 
+  /**
+   * Draws the text relaying information to the user in the battle.
+   */
   void DrawBattleText();
 
+  /**
+   * Draws the player in battle, facing the opponent away from the user.
+   */
   void DrawBattlePlayer();
 
+  /**
+   * Draws the opponent in battle, facing the user and the player.
+   */
   void DrawBattleOpponent();
 
   /**
@@ -271,11 +292,31 @@ private:
   std::string GetActiveNpcImagePath
       (const std::string& name, const island::Direction& direction);
 
+  /**
+   * Handler for the player's movement according to the user's input
+   *
+   * @param event the user's input
+   */
   void MovementKey(const cinder::app::KeyEvent& event);
 
+  /**
+   * Handler for the player's interaction with the map,
+   * or the npcs, or when the player tries to access the
+   * inventory etc. according to the user's input.
+   *
+   * @param event the user's input
+   */
   void InteractionKey(const cinder::app::KeyEvent& event);
 
+  /**
+   * Handler for the player's actions during battle, like attacking,
+   * healing, running etc. according to the user's input.
+   *
+   * @param event the user's input
+   */
   void BattleKey(const cinder::app::KeyEvent& event);
+
+  void ToggleVolume();
 
   /**
    * Determines what the program should do when one of the
@@ -373,9 +414,15 @@ private:
 
   /**
    * Stores the npc sprites with the name of the npc as the key and
-   * the file path as the corresponding value.
+   * the file path as the corresponding value, displayed in the overworld.
    */
   std::unordered_map<std::string, std::string> npc_sprite_files_;
+
+  /**
+   * Stores the npc battle sprites with the name of the npc as the key and
+   * the file path as the corresponding value, displayed in battle.
+   */
+  std::unordered_map<std::string, std::string> npc_battle_sprite_files_;
 
   /**
    * The npc sprites which are drawn on the screen, mapped with the npc name
@@ -385,6 +432,9 @@ private:
 
   /** The text to be displayed when the player interacts with the map. */
   std::string display_text_;
+
+  /** The name of the npc the player is currently battling. */
+  std::string battle_npc_;
 
   /** The speed or delay of the game, i.e. a lesser value is faster. */
   size_t speed_;

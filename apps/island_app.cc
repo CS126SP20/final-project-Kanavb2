@@ -70,6 +70,7 @@ void IslandApp::setup() {
   InitializeDisplayFilePaths();
   InitializeNpcTextFilePaths();
   InitializeNpcSpriteFilePaths();
+  InitializeNpcBattleSpriteFilePaths();
   InitializeActiveNpcSpriteFiles();
 
   cinder::gl::disableDepthRead();
@@ -152,6 +153,15 @@ void IslandApp::InitializeNpcTextFilePaths() {
 void IslandApp::InitializeNpcSpriteFilePaths() {
   for (const auto& npc : engine_.GetNpcs()) {
     AddNpcSprites(npc.name_);
+  }
+}
+
+void IslandApp::InitializeNpcBattleSpriteFilePaths() {
+  for (const auto& npc : engine_.GetNpcs()) {
+    if (npc.is_combatable_) {
+      npc_battle_sprite_files_.insert(std::pair<string, string>
+        (npc.name_, "assets/npc/images/" + npc.name_ + "_battle.png"));
+    }
   }
 }
 
@@ -249,7 +259,7 @@ void IslandApp::DrawBattle() {
 }
 
 void IslandApp::DrawBattleText() {
-  display_text_ = "0 atk\n 1 heal\n 2 run";
+  display_text_ = "";
 
   Translate(false);
   DrawTextBox();
@@ -264,23 +274,27 @@ void IslandApp::DrawBattlePlayer() {
   auto background = cinder::gl::Texture::create
       (cinder::loadImage("assets/battle_player.png"));
   cinder::gl::draw(background, Rectf(
-  1.0 / 8.0 * width,
-  center.y,
-  3.0 / 8.0 * width,
+  1.0 / 8.0 * width, center.y,3.0 / 8.0 * width,
   (center.y + height * kTextLocMultiplier) / (kTextLocMultiplier + 1.0)));
 }
 
 void IslandApp::DrawBattleOpponent() {
-/*  auto background = cinder::gl::Texture::create
-      (cinder::loadImage("assets/battle_player.png"));
-  cinder::gl::draw(background, getWindowBounds());*/
+  const cinder::vec2 center = getWindowCenter();
+  const double width = getWindowWidth();
+  const double height = getWindowHeight();
+  string opponent_image_path = npc_battle_sprite_files_[battle_npc_];
+
+  auto background = cinder::gl::Texture::create
+      (cinder::loadImage(opponent_image_path));
+  cinder::gl::draw(background, Rectf(
+    4.5 / 8.0 * width,200.0 / 800.0 * height,
+    5.5 / 8.0 * width,425.0 / 800.0 * height));
 }
 
 void IslandApp::DrawMap() const {
   auto map = cinder::gl::Texture::create
       (cinder::loadImage("assets/map.png"));
-  cinder::gl::draw(map, Rectf( 0,
-                               0,
+  cinder::gl::draw(map, Rectf( 0,0,
                                kMapTileSize * kScreenSize,
                                kMapTileSize * kScreenSize));
 }
@@ -341,9 +355,9 @@ void IslandApp::DrawInventory() const {
   auto inventory = cinder::gl::Texture::create
       (cinder::loadImage("assets/inventory.png"));
   cinder::gl::draw(inventory, Rectf(center.x / kScreenDivider,
-                               center.y / kScreenDivider,
-                              (center.x + width) / kScreenDivider,
-                              (center.y + height) / kScreenDivider));
+   center.y / kScreenDivider,(center.x + width) / kScreenDivider,
+  (center.y + height) / kScreenDivider));
+
   DrawItems();
   DrawMoney();
   DrawInventoryDescription();
@@ -613,8 +627,13 @@ void IslandApp::keyDown(KeyEvent event) {
       InteractionKey(event);
       break;
 
+    case KeyEvent::KEY_m:
+      ToggleVolume();
+      break;
+
     case KeyEvent::KEY_v:
       engine_.Save();
+      break;
   }
 }
 
@@ -681,7 +700,21 @@ void IslandApp::InteractionKey(const cinder::app::KeyEvent& event) {
 }
 
 void IslandApp::BattleKey(const cinder::app::KeyEvent& event) {
+  switch (event.getCode()) {
+    case KeyEvent::KEY_x:
+      state_ = GameState::kPlaying;
+  }
+}
 
+void IslandApp::ToggleVolume() {
+  if (background_audio_->getVolume() == 0) {
+    background_audio_->setVolume(kMaxVolume);
+    text_audio_->setVolume(kMaxVolume);
+    battle_audio_->setVolume(kMaxVolume);
+  } else {
+    background_audio_->setVolume(0);
+    text_audio_->setVolume(0);
+    battle_audio_->setVolume(0);  }
 }
 
 void IslandApp::HandleMovement(const Direction& direction) {
@@ -811,6 +844,7 @@ void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
 
   if (npc.is_combatable_) {
     should_start_battle_ = true;
+    battle_npc_ = npc.name_;
   }
 }
 
