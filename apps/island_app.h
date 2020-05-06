@@ -24,7 +24,6 @@ enum class GameState {
   kInventory,
   kMarket,
   kBattle,
-  kBattleText,
   kDisplayingText
 };
 
@@ -146,9 +145,13 @@ private:
    */
   void AddNpcSprites(const std::string& name);
 
-  void DrawBattle() const;
+  void DrawBattle();
 
-  void DrawBattleText() const;
+  void DrawBattleText();
+
+  void DrawBattlePlayer();
+
+  void DrawBattleOpponent();
 
   /**
    * Draws the map in the background of the game.
@@ -400,6 +403,12 @@ private:
    * after the previous directional command.
    */
   bool is_changed_direction_;
+
+  /**
+   * Determines whether the game should start a battle sequence
+   * based on whether the last npc the player encountered was combatable.
+   */
+  bool should_start_battle_;
 };
 
 }  // namespace islandapp

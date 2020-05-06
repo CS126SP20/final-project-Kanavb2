@@ -56,6 +56,7 @@ IslandApp::IslandApp()
       char_counter_{0},
       last_changed_direction_{0},
       is_changed_direction_{false},
+      should_start_battle_{false},
       prev_direction_{Direction::kDown},
       camera_{0,0} {
   if (!FLAGS_new_game) {
@@ -194,14 +195,17 @@ void IslandApp::update() {
     last_time_ = time;
   }
 
-  if (state_ != GameState::kBattleText  && state_ != GameState::kBattle
-      && !background_audio_->isPlaying()) {
+  if (should_start_battle_ && char_counter_ == display_text_.size()) {
+    state_ = GameState::kBattle;
+    should_start_battle_ = false;
+  }
+
+  if (state_ != GameState::kBattle && !background_audio_->isPlaying()) {
     background_audio_->start();
     battle_audio_->stop();
   }
 
-  if ((state_ == GameState::kBattle || state_ == GameState::kBattleText)
-      && !battle_audio_->isPlaying()) {
+  if (state_ == GameState::kBattle) {
     battle_audio_->start();
     background_audio_->stop();
   }
@@ -218,15 +222,12 @@ void IslandApp::draw() {
   cinder::gl::clear();
   cinder::gl::color(Color(1,1,1));
 
-  Translate(false);
-  if (state_ == GameState::kBattle || state_ == GameState::kBattleText) {
+  if (state_ == GameState::kBattle) {
     DrawBattle();
-    if (state_ == GameState::kBattleText) {
-      DrawBattleText();
-      return;
-    }
+    return;
   }
 
+  Translate(false);
   DrawMap();
   DrawPlayer();
   DrawNpcs();
@@ -238,12 +239,41 @@ void IslandApp::draw() {
   Translate(true);
 }
 
-void IslandApp::DrawBattle() const {
-
+void IslandApp::DrawBattle() {
+  auto background = cinder::gl::Texture::create
+      (cinder::loadImage("assets/battle_background.png"));
+  cinder::gl::draw(background, getWindowBounds());
+  DrawBattlePlayer();
+  DrawBattleOpponent();
+  DrawBattleText();
 }
 
-void IslandApp::DrawBattleText() const {
+void IslandApp::DrawBattleText() {
+  display_text_ = "0 atk\n 1 heal\n 2 run";
 
+  Translate(false);
+  DrawTextBox();
+  Translate(true);
+}
+
+void IslandApp::DrawBattlePlayer() {
+  const cinder::vec2 center = getWindowCenter();
+  const double width = getWindowWidth();
+  const double height = getWindowHeight();
+
+  auto background = cinder::gl::Texture::create
+      (cinder::loadImage("assets/battle_player.png"));
+  cinder::gl::draw(background, Rectf(
+  1.0 / 8.0 * width,
+  center.y,
+  3.0 / 8.0 * width,
+  (center.y + height * kTextLocMultiplier) / (kTextLocMultiplier + 1.0)));
+}
+
+void IslandApp::DrawBattleOpponent() {
+/*  auto background = cinder::gl::Texture::create
+      (cinder::loadImage("assets/battle_player.png"));
+  cinder::gl::draw(background, getWindowBounds());*/
 }
 
 void IslandApp::DrawMap() const {
@@ -296,9 +326,8 @@ void IslandApp::DrawTextBox() {
 
   Translate(true);
   cinder::gl::draw(text_box, Rectf( 0,
-                              (center.y + height * kTextLocMultiplier)
-                              / (kTextLocMultiplier + 1.0),
-                              width, height));
+  (center.y + height * kTextLocMultiplier) / (kTextLocMultiplier + 1.0),
+                                      width, height));
   PrintText(to_display, color, size, {width, height});
   Translate(false);
 }
@@ -560,8 +589,9 @@ void IslandApp::MovePlayerCamera() {
 }
 
 void IslandApp::keyDown(KeyEvent event) {
-  if (state_ == GameState::kBattle || state_ == GameState::kBattleText) {
+  if (state_ == GameState::kBattle) {
     BattleKey(event);
+    return;
   }
 
   switch (event.getCode()) {
@@ -627,7 +657,7 @@ void IslandApp::InteractionKey(const cinder::app::KeyEvent& event) {
       break;
 
     case KeyEvent::KEY_x:
-      if (state_ == GameState::kDisplayingText) {
+      if (state_ == GameState::kBattle || state_ == GameState::kDisplayingText){
         break;
       } else if (state_ == GameState::kInventory) {
         state_ = GameState::kPlaying;
@@ -779,8 +809,8 @@ void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
     state_ = GameState::kDisplayingText;
   }
 
-  if (npc.is_combatable_ && char_counter_ == display_text_.size()) {
-    state_ = GameState::kBattle;
+  if (npc.is_combatable_) {
+    should_start_battle_ = true;
   }
 }
 
