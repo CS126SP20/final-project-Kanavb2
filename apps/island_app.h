@@ -24,6 +24,7 @@ enum class GameState {
   kInventory,
   kMarket,
   kBattle,
+  kBattleText,
   kDisplayingText
 };
 
@@ -83,6 +84,18 @@ public:
 
   /** Money awarded to the player every time they interact with the puddle. */
   const size_t kPuddleMoney = 100;
+
+  /**
+   * The ratio of attack over defense in calculations in battle.
+   * A higher value would mean all characters deal more damage.
+   */
+  const double kAttackConstant = 2.0;
+
+  /**
+   * The constant used to calculate how much the characters heal in battle.
+   * A lower value would mean all characters heal more health.
+   */
+  const double kHealConstant = 4.0;
 
   /** The statistical bonus the player gets from getting items. */
   const double kStatMultiplier = 1.5;
@@ -169,6 +182,11 @@ private:
   void DrawBattle();
 
   /**
+   * Draws the Hitpoint bars for both the player and the npc.
+   */
+  void DrawHpBars();
+
+  /**
    * Draws the text relaying information to the user in the battle.
    */
   void DrawBattleText();
@@ -246,18 +264,6 @@ private:
   void Translate(bool is_up) const;
 
   /**
-   * Handles the movement of the camera with respect to the player.
-   * Makes sure the camera cannot move out of the map area.
-   */
-  void MovePlayerCamera();
-
-  /**
-   * Updates the player's statistics multipliers based on which items
-   * the playe has in their inventory.
-   */
-  void UpdateStatisticMultipliers();
-
-  /**
    * Determines what the player character should look like
    * when they move in a particular direction.
    *
@@ -298,6 +304,28 @@ private:
   std::string GetRightImagePath() const;
 
   /**
+   * Returns the text to be displayed during battles.
+   */
+  std::string GetBattleText();
+
+  /**
+   * Updates the engine and all the player npc interactions during battle.
+   */
+  void UpdateBattle();
+
+  /**
+   * Updates the player's statistics multipliers based on which items
+   * the playe has in their inventory.
+   */
+  void UpdateStatisticMultipliers();
+
+  /**
+   * Handles the movement of the camera with respect to the player.
+   * Makes sure the camera cannot move out of the map area.
+   */
+  void MovePlayerCamera();
+
+  /**
    * Gets the image path for the NPC according to where the NPC is facing.
    *
    * @param name the name of the npc
@@ -333,13 +361,17 @@ private:
 
   /**
    * Executes a battle step whenever the player battles the npc.
+   *
+   * @param event the user's input
    */
-  void ExecuteBattleStep();
+  void ExecuteBattleStep(const cinder::app::KeyEvent& event);
 
   /**
-   * Executes the npc's move in the battle.
+   * Executes the player's moves in battle according to the user's input.
+   *
+   * @param event the user's input
    */
-  void ExecuteNpcBattleMove();
+  void ExecutePlayerBattleMove(const cinder::app::KeyEvent& event);
 
   /**
    * Changes the volume of the game, mutes or un-mutes all the audios.
@@ -483,10 +515,10 @@ private:
   double speed_multiplier_;
 
   /** The hitpoints for the player, battle ends when this reaches 0. */
-  size_t player_hp_;
+  double player_hp_;
 
   /** The hitpoints for the npc, battle ends when this reaches 0. */
-  size_t npc_hp_;
+  double npc_hp_;
 
   /** The speed or delay of the game, i.e. a lesser value is faster. */
   size_t speed_;
@@ -519,7 +551,7 @@ private:
    * Determines whether it's the player's or the npc's turn to move in
    * battle, depending on their respective speed stats.
    */
-  bool is_player_turn_{};
+  bool is_player_turn_;
 };
 
 }  // namespace islandapp

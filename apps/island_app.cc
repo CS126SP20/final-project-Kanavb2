@@ -226,14 +226,16 @@ void IslandApp::update() {
     should_start_battle_ = false;
   }
 
-  if (state_ != GameState::kBattle && !background_audio_->isPlaying()) {
+  if (state_ != GameState::kBattle && state_ != GameState::kBattleText
+      && !background_audio_->isPlaying()) {
     background_audio_->start();
     battle_audio_->stop();
   }
 
-  if (state_ == GameState::kBattle) {
+  if (state_ == GameState::kBattle || state_ == GameState::kBattleText) {
     battle_audio_->start();
     background_audio_->stop();
+    UpdateBattle();
   }
 
   if (engine_.GetKey()) {
@@ -249,7 +251,7 @@ void IslandApp::draw() {
   cinder::gl::clear();
   cinder::gl::color(Color(1,1,1));
 
-  if (state_ == GameState::kBattle) {
+  if (state_ == GameState::kBattle || state_ == GameState::kBattleText) {
     DrawBattle();
     return;
   }
@@ -272,10 +274,32 @@ void IslandApp::DrawBattle() {
   cinder::gl::draw(background, getWindowBounds());
   DrawBattlePlayer();
   DrawBattleOpponent();
+  DrawHpBars();
   DrawBattleText();
 }
 
+void IslandApp::DrawHpBars() {
+  auto hp_box = cinder::gl::Texture::create
+      (cinder::loadImage("assets/hp_bar.png"));
+  cinder::gl::draw(hp_box, Rectf
+  (230, 180, 430, 320));
+  cinder::gl::draw(hp_box, Rectf
+  (300, 380, 500, 520));
+
+  auto blood = cinder::gl::Texture::create
+      (cinder::loadImage("assets/blood.png"));
+  cinder::gl::draw(blood, Rectf(270, 233.5,
+      270 + npc_hp_ / battle_npc_.statistics_.hit_points_ * 140,
+      253.5));
+  cinder::gl::draw(blood, Rectf(340, 433.5,
+      340 + player_hp_ / engine_.GetPlayer().statistics_.hit_points_ * 140,
+      453.5));
+
+}
+
 void IslandApp::DrawBattleText() {
+  display_text_ = GetBattleText();
+
   if (!battle_turn_counter_) {
     display_text_ = battle_npc_.name_ + " wants to battle!";
   }
@@ -468,7 +492,7 @@ void IslandApp::DrawInventoryDescription() const {
 
   auto box = TextBox()
       .alignment(TextBox::LEFT)
-      .font(cinder::Font(kNormalFont, 2.0 * kFontSize / 3.0))
+      .font(cinder::Font(kNormalFont, 2 * kFontSize / 3.0))
       .size(size)
       .color(Color::black())
       .backgroundColor(ColorA(0, 0, 0, 0))
@@ -592,9 +616,47 @@ string IslandApp::GetActiveNpcImagePath
   return npc_sprite_files_[name + dir_path];
 }
 
+std::string IslandApp::GetBattleText() {
+  if (is_player_turn_) {
+    if (state_ == GameState::kBattleText) {
+      switch (player_battle_move_) {
+        case BattleMove::kAttack:
+          return GetTextFromFile("assets/battle/player_attack.txt");
+        case BattleMove::kHeal:
+          return GetTextFromFile("assets/battle/player_heal.txt");
+        case BattleMove::kRun:
+          return GetTextFromFile("assets/battle/player_run.txt");
+      }
+    }
+    return GetTextFromFile("assets/battle/player_move.txt");
+  } else {
+    if (npc_battle_move_ == BattleMove::kAttack) {
+      return GetTextFromFile("assets/battle/npc_attack.txt");
+    } else {
+      return GetTextFromFile("assets/battle/npc_heal.txt");
+    }
+  }
+}
+
+void IslandApp::UpdateBattle() {
+  if (player_battle_move_ == BattleMove::kRun) {
+    state_ = GameState::kPlaying;
+  }
+  if (player_hp_ < 0) {
+    if (engine_.GetPlayer().money_ > battle_npc_.money_) {
+      engine_.RemoveMoney(battle_npc_.money_);
+    }
+    state_ = GameState::kPlaying;
+  }
+  if (npc_hp_ < 0) {
+    engine_.AddMoney(battle_npc_.money_);
+    state_ = GameState::kPlaying;
+  }
+}
+
 void IslandApp::UpdateStatisticMultipliers() {
   std::vector<Item> inventory = engine_.GetPlayer().inventory_;
-  for (Item item : inventory) {
+  for (const Item& item : inventory) {
     if (item.name_ == "shoe")
       speed_multiplier_ = kStatMultiplier;
     else if (item.name_ == "sword")
@@ -635,7 +697,7 @@ void IslandApp::MovePlayerCamera() {
 }
 
 void IslandApp::keyDown(KeyEvent event) {
-  if (state_ == GameState::kBattle) {
+  if (state_ == GameState::kBattle || state_ == GameState::kBattleText) {
     if (event.getCode() == KeyEvent::KEY_m) {
       ToggleVolume();
     }
@@ -672,7 +734,7 @@ void IslandApp::keyDown(KeyEvent event) {
   }
 }
 
-void IslandApp::MovementKey(const cinder::app::KeyEvent& event) {
+void IslandApp::MovementKey(const KeyEvent& event) {
   switch (event.getCode()) {
     case KeyEvent::KEY_UP:
     case KeyEvent::KEY_w:
@@ -696,7 +758,7 @@ void IslandApp::MovementKey(const cinder::app::KeyEvent& event) {
   }
 }
 
-void IslandApp::InteractionKey(const cinder::app::KeyEvent& event) {
+void IslandApp::InteractionKey(const KeyEvent& event) {
   switch (event.getCode()) {
     case KeyEvent::KEY_z:
       if ((state_ == GameState::kDisplayingText || state_ == GameState::kMarket)
@@ -734,48 +796,67 @@ void IslandApp::InteractionKey(const cinder::app::KeyEvent& event) {
   }
 }
 
-void IslandApp::BattleKey(const cinder::app::KeyEvent& event) {
+void IslandApp::BattleKey(const KeyEvent& event) {
   switch (event.getCode()) {
     case KeyEvent::KEY_z:
-      ExecuteBattleStep();
-      break;
-
-    case KeyEvent::KEY_x:
-      state_ = GameState::kPlaying;
+    case KeyEvent::KEY_SPACE:
+    case KeyEvent::KEY_h:
+    case KeyEvent::KEY_r:
+      ExecuteBattleStep(event);
       break;
   }
 }
 
-void IslandApp::ExecuteBattleStep() {
+void IslandApp::ExecuteBattleStep(const KeyEvent& event) {
+  if (state_ == GameState::kBattleText && event.getCode() == KeyEvent::KEY_z) {
+    state_ = GameState::kBattle;
+  } else if (state_ == GameState::kBattleText) {
+    return;
+  }
+
   if (battle_turn_counter_ == 0) {
     battle_turn_counter_++;
     return;
   }
 
   if (is_player_turn_) {
+    switch (event.getCode()) {
+      case KeyEvent::KEY_SPACE:
+      case KeyEvent::KEY_h:
+      case KeyEvent::KEY_r:
+        ExecutePlayerBattleMove(event);
+        state_ = GameState::kBattleText;
+        break;
 
+      default: return;
+    }
   } else {
-    ExecuteNpcBattleMove();
+    player_hp_ -= battle_npc_.statistics_.attack_ * kAttackConstant
+            / (engine_.GetPlayer().statistics_.defense_ * defense_multiplier_);
   }
 
   battle_turn_counter_++;
   is_player_turn_ = !is_player_turn_;
 }
 
-void IslandApp::ExecuteNpcBattleMove() {
-  npc_battle_move_ = static_cast<BattleMove> (rand() % 2);
-
-  switch (npc_battle_move_) {
-    case BattleMove::kAttack :
-      player_hp_ -= battle_npc_.statistics_.attack_ * 2.0
-          / (engine_.GetPlayer().statistics_.defense_ * defense_multiplier_);
+void IslandApp::ExecutePlayerBattleMove(const KeyEvent& event) {
+  switch (event.getCode()) {
+    case KeyEvent::KEY_SPACE:
+      player_battle_move_ = BattleMove::kAttack;
+      npc_hp_ -= (engine_.GetPlayer().statistics_.attack_ * attack_multiplier_)
+              * kAttackConstant / battle_npc_.statistics_.defense_;
       break;
 
-    case BattleMove::kHeal :
-      npc_hp_ += battle_npc_.statistics_.hit_points_ / 4;
+    case KeyEvent::KEY_h:
+      player_battle_move_ = BattleMove::kHeal;
+      player_hp_ += engine_.GetPlayer().statistics_.hit_points_ / kHealConstant;
+      if (player_hp_ > engine_.GetPlayer().statistics_.hit_points_) {
+        player_hp_ = engine_.GetPlayer().statistics_.hit_points_;
+      }
       break;
 
-    case BattleMove::kRun:
+    case KeyEvent::KEY_r:
+      player_battle_move_ = BattleMove::kRun;
       break;
   }
 }
@@ -921,6 +1002,7 @@ void IslandApp::ExecuteNpcInteraction(const island::Location& location) {
     battle_npc_ = npc;
     player_hp_ = engine_.GetPlayer().statistics_.hit_points_ * hp_multiplier_;
     npc_hp_ = npc.statistics_.hit_points_;
+    player_battle_move_ = BattleMove::kAttack;
 
     is_player_turn_ = engine_.GetPlayer().statistics_.speed_ * speed_multiplier_
                         >= npc.statistics_.speed_;
