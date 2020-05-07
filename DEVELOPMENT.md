@@ -61,5 +61,9 @@
 * Added a save state, the player can save their current progress
 * Added the ability to load from a previously saved file
 
-### To do:
-* Figure out combat system
+### 5/5/20
+* Added mute button to mute all sounds in the game
+* Added framework for the background of the battle system
+
+### 5/6/20
+* Finished designing the battle system
