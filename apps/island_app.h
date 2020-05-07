@@ -106,6 +106,9 @@ public:
   /** The multiplier for how many pixels the camera translates the view. */
   const double kTranslationMultiplier = 40.0;
 
+  /** The max volume for the battle audio file in the game. */
+  const float kMaxBattleVolume = 0.5;
+
   /** The location on the map where the market is. */
   const island::Location kMarketLocation = {36, 36};
 

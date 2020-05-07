@@ -101,6 +101,7 @@ void IslandApp::InitializeAudio() {
   cinder::audio::SourceFileRef battle_src = cinder::audio::load
       (cinder::app::loadAsset("battle_music.mp3"));
   battle_audio_ = cinder::audio::Voice::create(battle_src);
+  battle_audio_->setVolume(kMaxBattleVolume);
 
   cinder::audio::SourceFileRef text_src = cinder::audio::load
       (cinder::app::loadAsset("text_sound.wav"));
@@ -865,7 +866,7 @@ void IslandApp::ToggleVolume() {
   if (background_audio_->getVolume() == 0) {
     background_audio_->setVolume(kMaxVolume);
     text_audio_->setVolume(kMaxVolume);
-    battle_audio_->setVolume(kMaxVolume);
+    battle_audio_->setVolume(kMaxBattleVolume);
   } else {
     background_audio_->setVolume(0);
     text_audio_->setVolume(0);
