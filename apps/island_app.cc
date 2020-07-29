@@ -239,10 +239,6 @@ void IslandApp::update() {
     UpdateBattle();
   }
 
-  if (engine_.GetKey()) {
-    npc_text_files_["Klutz"] = "assets/npc/dialogue/Klutz_after_key.txt";
-  }
-
   UpdateStatisticMultipliers();
   MovePlayerCamera();
 }

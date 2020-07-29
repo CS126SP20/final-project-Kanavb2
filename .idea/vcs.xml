@@ -5,5 +5,7 @@
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/allegro-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/allegro5-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/catch2-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/gflags-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/gflags-src/doc" vcs="Git" />
   </component>
 </project>
