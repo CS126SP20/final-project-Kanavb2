@@ -15,6 +15,10 @@ The Island is a rendition of 90s two dimensional [top-down](https://en.wikipedia
 * [catch2](https://github.com/catchorg/Catch2)
 * CMake
 
+### Gameplay
+
+![](https://github.com/CS126SP20/final-project-Kanavb2/blob/master/The%20Island.gif)
+
 ### Installation
 For installation, just follow these steps:
 
