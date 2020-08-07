@@ -23,7 +23,7 @@ The Island is a rendition of 90s two dimensional [top-down](https://en.wikipedia
 For installation, just follow these steps:
 
 * Download cinder [here](https://libcinder.org/download)
-* git clone https://github.com/CS126SP20/final-project-Kanavb2.git
+* git clone https://github.com/CS126SP20/the-island
 * Run :)
 
 ### Controls
